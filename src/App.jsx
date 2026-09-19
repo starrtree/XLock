@@ -1,4 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import CosmicField from './components/CosmicField.jsx'
+import StarCursor from './components/StarCursor.jsx'
+import StarrVis from './components/StarrVis.jsx'
 import {
   Check,
   CirclePause,
@@ -79,9 +82,9 @@ const INITIAL_TASKS = [
 ]
 
 function initialState() {
-  const saved = localStorage.getItem(STORAGE_KEY)
-  if (saved) {
-    try {
+  try {
+    const saved = window.localStorage?.getItem(STORAGE_KEY)
+    if (saved) {
       const parsed = JSON.parse(saved)
       return {
         tasks: parsed.tasks?.length ? parsed.tasks : INITIAL_TASKS,
@@ -89,16 +92,21 @@ function initialState() {
         captures: parsed.captures ?? [],
         completions: parsed.completions ?? [],
       }
-    } catch {
-      // fall through
     }
+  } catch (error) {
+    console.warn('XLock storage unavailable; continuing in memory.', error)
   }
+
   return {
     tasks: INITIAL_TASKS,
     activeSession: null,
     captures: [],
     completions: [],
   }
+}
+
+function makeId() {
+  return globalThis.crypto?.randomUUID?.() ?? `xlock-${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
 
 function formatDuration(ms) {
@@ -258,7 +266,11 @@ export default function App() {
     : null
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+    try {
+      window.localStorage?.setItem(STORAGE_KEY, JSON.stringify(state))
+    } catch (error) {
+      console.warn('XLock could not persist this update.', error)
+    }
   }, [state])
 
   useEffect(() => {
@@ -327,7 +339,7 @@ export default function App() {
   const completeCurrent = () => {
     if (!state.activeSession || !sessionTask) return
     const completion = {
-      id: crypto.randomUUID(),
+      id: makeId(),
       taskId: sessionTask.id,
       title: sessionTask.title,
       completedAt: Date.now(),
@@ -348,7 +360,7 @@ export default function App() {
       ...prev,
       captures: [
         {
-          id: crypto.randomUUID(),
+          id: makeId(),
           text,
           createdAt: Date.now(),
           relatedX: sessionTask?.title ?? selected?.title ?? null,
@@ -392,7 +404,12 @@ export default function App() {
 
     return (
       <main className="app locked" style={{ '--accent': accent, '--accent2': sessionTask.secondaryColor }}>
-        <div className="cosmic-field" />
+        <CosmicField
+          colors={[sessionTask.secondaryColor, '#090313', sessionTask.primaryColor, '#1b1033']}
+          intensity={0.5}
+          speed={0.08}
+        />
+        <StarCursor />
         <header className="topbar locked-topbar">
           <div className="brand">
             <TreeXMark compact />
@@ -414,6 +431,22 @@ export default function App() {
               <TreeXMark compact />
             </div>
             <span>STARRX</span>
+          </div>
+
+          <div className="focus-starrvis">
+            <StarrVis
+              compact
+              mood={timeout ? 'sleepy' : state.activeSession.blocked ? 'warning' : remainingMs < 0 ? 'thinking' : 'excited'}
+              message={
+                timeout
+                  ? 'Timeout active. I’ll bring you back.'
+                  : state.activeSession.blocked
+                    ? 'Solve only the blocker.'
+                    : remainingMs < 0
+                      ? 'Overtime. Finish the definition, not perfection.'
+                      : 'Locked in.'
+              }
+            />
           </div>
 
           <div
@@ -525,7 +558,12 @@ export default function App() {
 
   return (
     <main className="app unlocked">
-      <div className="cosmic-field" />
+      <CosmicField
+        colors={['#130822', '#40195f', '#071730', '#9b5d1f']}
+        intensity={0.56}
+        speed={0.1}
+      />
+      <StarCursor />
       <header className="topbar">
         <div className="brand">
           <TreeXMark compact />
@@ -672,11 +710,10 @@ export default function App() {
         )}
 
         <div className="starrvis-perch">
-          <div className="starrvis-star">✦</div>
-          <div>
-            <strong>StarrVis</strong>
-            <span>{selected ? 'That one? Turn the wheel.' : 'Pick one mission. I’ll keep the rest safe.'}</span>
-          </div>
+          <StarrVis
+            mood={selected ? 'curious' : 'idle'}
+            message={selected ? 'That one? Turn the wheel.' : 'Pick one mission. I’ll keep the rest safe.'}
+          />
         </div>
       </section>
 
