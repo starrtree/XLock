@@ -3,8 +3,49 @@ import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import './styles.css'
 
-createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+class XLockErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { error: null }
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error }
+  }
+
+  componentDidCatch(error, info) {
+    console.error('XLock crashed during render:', error, info)
+  }
+
+  render() {
+    if (!this.state.error) return this.props.children
+
+    return (
+      <main className="fatal-fallback">
+        <div className="fatal-mark">✦</div>
+        <p className="eyebrow">XLOCK RECOVERY MODE</p>
+        <h1>The interface hit a runtime error.</h1>
+        <p>
+          Your screen should never fail silently. Reload once; if this remains,
+          the error below identifies what needs fixing.
+        </p>
+        <pre>{String(this.state.error?.message || this.state.error)}</pre>
+        <button onClick={() => window.location.reload()}>Reload XLock</button>
+      </main>
+    )
+  }
+}
+
+const root = document.getElementById('root')
+
+if (!root) {
+  document.body.innerHTML = '<main style="padding:32px;background:#07050d;color:white;min-height:100vh">XLock could not find its root element.</main>'
+} else {
+  createRoot(root).render(
+    <React.StrictMode>
+      <XLockErrorBoundary>
+        <App />
+      </XLockErrorBoundary>
+    </React.StrictMode>,
+  )
+}
