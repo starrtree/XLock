@@ -1487,3 +1487,26 @@ button {
     animation: none !important;
   }
 }
+
+
+.starrtree-source-texture {
+  position: absolute;
+  inset: -4%;
+  width: 108%;
+  height: 108%;
+  object-fit: cover;
+  opacity: .24;
+  mix-blend-mode: screen;
+  filter: saturate(.8) contrast(1.05) brightness(.62);
+  transform: scale(1.03);
+}
+
+.paper-cosmic-field > canvas,
+.paper-cosmic-field canvas {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  mix-blend-mode: screen;
+  opacity: .86;
+}
