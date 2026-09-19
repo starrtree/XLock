@@ -1,6 +1,9 @@
 import React from 'react'
 import { MeshGradient } from '@paper-design/shaders-react'
 
+const STARRTREE_TEXTURE =
+  'https://raw.githubusercontent.com/starrtree/StarrTree/main/assets/starrtree_background_final.png'
+
 export default function CosmicField({
   colors = ['#160a28', '#3d1b68', '#07152f', '#b16b20'],
   intensity = 1,
@@ -8,6 +11,13 @@ export default function CosmicField({
 }) {
   return (
     <div className="paper-cosmic-field" aria-hidden="true" style={{ opacity: intensity }}>
+      <img
+        className="starrtree-source-texture"
+        src={STARRTREE_TEXTURE}
+        alt=""
+        loading="eager"
+        decoding="async"
+      />
       <MeshGradient
         colors={colors}
         distortion={0.72}
