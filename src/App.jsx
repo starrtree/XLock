@@ -172,6 +172,7 @@ function TreeXMark({ compact = false }) {
 
 function CaptureModal({ onClose, onSave, relatedTitle }) {
   const [text, setText] = useState('')
+  const [type, setType] = useState('idea')
   const inputRef = useRef(null)
 
   useEffect(() => {
@@ -181,7 +182,7 @@ function CaptureModal({ onClose, onSave, relatedTitle }) {
   const submit = () => {
     const value = text.trim()
     if (!value) return
-    onSave(value)
+    onSave(value, type)
     setText('')
   }
 
@@ -201,6 +202,16 @@ function CaptureModal({ onClose, onSave, relatedTitle }) {
           <h2>Throw it into the vault.</h2>
           <p className="muted">It will be preserved{relatedTitle ? ` beside “${relatedTitle}”` : ''}. You do not need to follow it now.</p>
         </div>
+        <label className="capture-type">
+          <span>Store as</span>
+          <select value={type} onChange={(e) => setType(e.target.value)}>
+            <option value="idea">Idea</option>
+            <option value="project">Potential project</option>
+            <option value="resource">Resource</option>
+            <option value="research">Research question</option>
+            <option value="note">Note</option>
+          </select>
+        </label>
         <textarea
           ref={inputRef}
           value={text}
@@ -463,13 +474,14 @@ export default function App() {
     setCompletionOpen(false)
   }
 
-  const saveCapture = (text) => {
+  const saveCapture = (text, type = 'idea') => {
     setState((prev) => ({
       ...prev,
       captures: [
         {
           id: makeId(),
           text,
+          type,
           createdAt: Date.now(),
           relatedX: sessionTask?.title ?? selected?.title ?? null,
         },
