@@ -1731,3 +1731,47 @@ button {
     display: none;
   }
 }
+
+
+/* Motherboard asset: Paper Shaders DotOrbit used as a restrained focus sigil. */
+.paper-orbit-accent {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: min(64vw, 720px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  opacity: .12;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  mask-image: radial-gradient(circle, black 0 38%, transparent 72%);
+  -webkit-mask-image: radial-gradient(circle, black 0 38%, transparent 72%);
+}
+
+.paper-orbit-accent canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.locked .paper-orbit-accent {
+  opacity: .075;
+  width: min(58vw, 620px);
+}
+
+@media (max-width: 680px) {
+  .paper-orbit-accent {
+    width: 112vw;
+    opacity: .085;
+  }
+
+  .locked .paper-orbit-accent {
+    width: 104vw;
+    opacity: .055;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paper-orbit-accent {
+    opacity: .045;
+  }
+}
