@@ -2,21 +2,31 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import CosmicField from './components/CosmicField.jsx'
 import StarCursor from './components/StarCursor.jsx'
 import StarrVis from './components/StarrVis.jsx'
+import NewXModal from './components/NewXModal.jsx'
+import CompletionModal from './components/CompletionModal.jsx'
+import {
+  cloudConfigured,
+  hydrateState,
+  persistState,
+  readCachedState,
+  writeCachedState,
+} from './lib/persistence.js'
 import {
   Check,
   CirclePause,
   Clock3,
+  Cloud,
+  CloudOff,
   LockKeyhole,
   Mic2,
   Orbit,
+  Plus,
   RotateCcw,
   Sparkles,
   TimerReset,
   Vault,
   X,
 } from 'lucide-react'
-
-const STORAGE_KEY = 'xlock-mvp-v1'
 
 const INITIAL_TASKS = [
   {
@@ -82,27 +92,14 @@ const INITIAL_TASKS = [
 ]
 
 function initialState() {
-  try {
-    const saved = window.localStorage?.getItem(STORAGE_KEY)
-    if (saved) {
-      const parsed = JSON.parse(saved)
-      return {
-        tasks: parsed.tasks?.length ? parsed.tasks : INITIAL_TASKS,
-        activeSession: parsed.activeSession ?? null,
-        captures: parsed.captures ?? [],
-        completions: parsed.completions ?? [],
-      }
-    }
-  } catch (error) {
-    console.warn('XLock storage unavailable; continuing in memory.', error)
-  }
-
-  return {
+  const fallback = {
     tasks: INITIAL_TASKS,
     activeSession: null,
     captures: [],
     completions: [],
   }
+
+  return readCachedState(fallback)
 }
 
 function makeId() {
@@ -237,7 +234,9 @@ function VaultPanel({ title, items, onClose, emptyText }) {
               <span>{new Date(item.createdAt ?? item.completedAt).toLocaleString()}</span>
               <strong>{item.text ?? item.title}</strong>
               {item.relatedX && <small>{item.relatedX}</small>}
+              {item.type && <small>Type: {item.type}</small>}
               {item.actualMs != null && <small>Actual: {formatDuration(item.actualMs)}</small>}
+              {item.reason && <small>Lesson: {item.reason}</small>}
             </article>
           ))}
         </div>
@@ -250,10 +249,18 @@ export default function App() {
   const [state, setState] = useState(initialState)
   const [selectedId, setSelectedId] = useState(null)
   const [captureOpen, setCaptureOpen] = useState(false)
+  const [newXOpen, setNewXOpen] = useState(false)
+  const [completionOpen, setCompletionOpen] = useState(false)
   const [panel, setPanel] = useState(null)
   const [now, setNow] = useState(Date.now())
   const [drag, setDrag] = useState({ active: false, start: 0, delta: 0 })
+  const [syncState, setSyncState] = useState({
+    mode: cloudConfigured() ? 'cloud' : 'local',
+    status: cloudConfigured() ? 'connecting' : 'ready',
+    error: null,
+  })
   const wheelRef = useRef(null)
+  const hydratedRef = useRef(false)
 
   const tasks = useMemo(
     () => [...state.tasks].filter((t) => t.status !== 'done').sort((a, b) => b.priority - a.priority),
@@ -266,11 +273,44 @@ export default function App() {
     : null
 
   useEffect(() => {
-    try {
-      window.localStorage?.setItem(STORAGE_KEY, JSON.stringify(state))
-    } catch (error) {
-      console.warn('XLock could not persist this update.', error)
+    let cancelled = false
+
+    hydrateState(state).then((result) => {
+      if (cancelled) return
+      if (result.state) setState(result.state)
+      hydratedRef.current = true
+      setSyncState({
+        mode: result.mode,
+        status: result.status,
+        error: result.error ?? null,
+      })
+    })
+
+    return () => {
+      cancelled = true
     }
+  }, [])
+
+  useEffect(() => {
+    writeCachedState(state)
+    if (!hydratedRef.current) return
+
+    setSyncState((current) => ({
+      ...current,
+      status: current.mode === 'cloud' ? 'syncing' : 'ready',
+    }))
+
+    const id = window.setTimeout(() => {
+      persistState(state).then((result) => {
+        setSyncState({
+          mode: result.mode,
+          status: result.status,
+          error: result.error ?? null,
+        })
+      })
+    }, 450)
+
+    return () => window.clearTimeout(id)
   }, [state])
 
   useEffect(() => {
@@ -316,6 +356,8 @@ export default function App() {
         activeTimeout: null,
         tokens: { ten: false, thirty: false },
         blocked: false,
+        completedSteps: [],
+        blockerEvents: [],
       },
       tasks: prev.tasks.map((t) => (t.id === selected.id ? { ...t, status: 'doing' } : t)),
     }))
@@ -336,8 +378,67 @@ export default function App() {
     }))
   }
 
-  const completeCurrent = () => {
+  const createTask = (draft) => {
+    setState((prev) => {
+      const highestPriority = Math.max(0, ...prev.tasks.map((task) => task.priority ?? 0))
+      return {
+        ...prev,
+        tasks: [
+          {
+            id: makeId(),
+            ...draft,
+            priority: highestPriority + 10,
+            status: 'ready',
+          },
+          ...prev.tasks,
+        ],
+      }
+    })
+    setNewXOpen(false)
+  }
+
+  const toggleStep = (index) => {
+    if (!state.activeSession) return
+    setState((prev) => {
+      if (!prev.activeSession) return prev
+      const completed = new Set(prev.activeSession.completedSteps ?? [])
+      if (completed.has(index)) completed.delete(index)
+      else completed.add(index)
+      return {
+        ...prev,
+        activeSession: {
+          ...prev.activeSession,
+          completedSteps: [...completed].sort((a, b) => a - b),
+        },
+      }
+    })
+  }
+
+  const toggleBlocked = () => {
+    setState((prev) => {
+      if (!prev.activeSession) return prev
+      const becomingBlocked = !prev.activeSession.blocked
+      return {
+        ...prev,
+        activeSession: {
+          ...prev.activeSession,
+          blocked: becomingBlocked,
+          blockerEvents: becomingBlocked
+            ? [...(prev.activeSession.blockerEvents ?? []), { at: Date.now() }]
+            : (prev.activeSession.blockerEvents ?? []),
+        },
+      }
+    })
+  }
+
+  const requestComplete = () => {
     if (!state.activeSession || !sessionTask) return
+    setCompletionOpen(true)
+  }
+
+  const finalizeCompletion = ({ reason, note, delivered }) => {
+    if (!state.activeSession || !sessionTask) return
+
     const completion = {
       id: makeId(),
       taskId: sessionTask.id,
@@ -346,13 +447,20 @@ export default function App() {
       actualMs: elapsedMs,
       expectedMs,
       overtimeMs: Math.max(0, elapsedMs - expectedMs),
+      reason,
+      note,
+      delivered,
+      completedSteps: state.activeSession.completedSteps ?? [],
+      blockerCount: state.activeSession.blockerEvents?.length ?? 0,
     }
+
     setState((prev) => ({
       ...prev,
       tasks: prev.tasks.map((t) => (t.id === sessionTask.id ? { ...t, status: 'done' } : t)),
       completions: [completion, ...prev.completions],
       activeSession: null,
     }))
+    setCompletionOpen(false)
   }
 
   const saveCapture = (text) => {
@@ -372,6 +480,7 @@ export default function App() {
   }
 
   const resetDemo = () => {
+    if (!window.confirm('Replace the current XLock state with the demo tasks?')) return
     setState({ tasks: INITIAL_TASKS, activeSession: null, captures: [], completions: [] })
     setSelectedId(null)
   }
@@ -480,16 +589,24 @@ export default function App() {
 
           <div className="next-stack">
             <p className="eyebrow">NEXT</p>
-            {sessionTask.nextSteps.slice(0, 3).map((step, index) => (
-              <div className="next-step" key={step}>
-                <span>{String(index + 1).padStart(2, '0')}</span>
-                <p>{step}</p>
-              </div>
-            ))}
+            {sessionTask.nextSteps.slice(0, 3).map((step, index) => {
+              const done = state.activeSession.completedSteps?.includes(index)
+              return (
+                <button
+                  type="button"
+                  className={`next-step next-step-button ${done ? 'done' : ''}`}
+                  key={step}
+                  onClick={() => toggleStep(index)}
+                >
+                  <span>{done ? <Check size={14} /> : String(index + 1).padStart(2, '0')}</span>
+                  <p>{step}</p>
+                </button>
+              )
+            })}
           </div>
 
           <div className="focus-actions">
-            <button className="complete-button" onClick={completeCurrent} disabled={!!timeout}>
+            <button className="complete-button" onClick={requestComplete} disabled={!!timeout}>
               <Check size={20} />
               Complete X
             </button>
@@ -499,10 +616,7 @@ export default function App() {
             </button>
             <button
               className={`secondary-button ${state.activeSession.blocked ? 'active' : ''}`}
-              onClick={() => setState((prev) => ({
-                ...prev,
-                activeSession: { ...prev.activeSession, blocked: !prev.activeSession.blocked },
-              }))}
+              onClick={toggleBlocked}
             >
               <CirclePause size={18} />
               {state.activeSession.blocked ? 'Blocker flagged' : 'I’m Blocked'}
@@ -549,6 +663,17 @@ export default function App() {
             onSave={saveCapture}
           />
         )}
+
+        {completionOpen && (
+          <CompletionModal
+            taskTitle={sessionTask.title}
+            overtime={remainingMs < 0}
+            completedSteps={state.activeSession.completedSteps?.length ?? 0}
+            totalSteps={sessionTask.nextSteps.slice(0, 3).length}
+            onClose={() => setCompletionOpen(false)}
+            onConfirm={finalizeCompletion}
+          />
+        )}
       </main>
     )
   }
@@ -574,6 +699,22 @@ export default function App() {
         </div>
 
         <div className="top-actions">
+          <span
+            className={`sync-pill ${syncState.status}`}
+            title={syncState.error || (syncState.mode === 'cloud' ? 'Supabase sync enabled' : 'Local-first mode')}
+          >
+            {syncState.mode === 'cloud' && syncState.status !== 'offline'
+              ? <Cloud size={14} />
+              : <CloudOff size={14} />}
+            {syncState.status === 'syncing'
+              ? 'Syncing'
+              : syncState.mode === 'cloud' && syncState.status === 'synced'
+                ? 'Cloud'
+                : 'Local'}
+          </span>
+          <button className="ghost-button" onClick={() => setNewXOpen(true)}>
+            <Plus size={16} /> New X
+          </button>
           <button className="ghost-button" onClick={() => setPanel('vault')}>
             <Vault size={16} /> Vault {state.captures.length}
           </button>
@@ -703,9 +844,14 @@ export default function App() {
             <TreeXMark />
             <p className="eyebrow">ALL CLEAR</p>
             <h2>You finished every current X.</h2>
-            <button className="secondary-button" onClick={resetDemo}>
-              <RotateCcw size={18} /> Restore demo tasks
-            </button>
+            <div className="empty-actions">
+              <button className="primary-button" onClick={() => setNewXOpen(true)}>
+                <Plus size={18} /> Create an X
+              </button>
+              <button className="secondary-button" onClick={resetDemo}>
+                <RotateCcw size={18} /> Restore demo tasks
+              </button>
+            </div>
           </div>
         )}
 
@@ -731,6 +877,13 @@ export default function App() {
           relatedTitle={selected?.title}
           onClose={() => setCaptureOpen(false)}
           onSave={saveCapture}
+        />
+      )}
+
+      {newXOpen && (
+        <NewXModal
+          onClose={() => setNewXOpen(false)}
+          onCreate={createTask}
         />
       )}
 
