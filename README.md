@@ -109,7 +109,7 @@ XLock follows the StarrTree AI Resource Motherboard rule: prefer proven reusable
 
 Current implementation uses:
 
-- **Paper Shaders** via `@paper-design/shaders-react` for the lightweight animated cosmic field
+- **Paper Shaders** via `@paper-design/shaders-react`: `MeshGradient` for the atmospheric field plus a restrained `DotOrbit` focus sigil
 - interactive SVG for the task wheel so the lock gesture remains a real control rather than a raster mockup
 - custom StarrVis / StarrTree UI assets already adapted into the repo
 
