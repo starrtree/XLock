@@ -1510,3 +1510,268 @@ button {
   mix-blend-mode: screen;
   opacity: .86;
 }
+
+
+/* MVP productization: forms, sync state, and actionable NEXT steps */
+
+.sync-pill {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 11px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 999px;
+  background: rgba(8,5,14,.42);
+  color: rgba(255,255,255,.52);
+  font-size: .68rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  backdrop-filter: blur(14px) saturate(1.2);
+}
+
+.sync-pill.synced {
+  border-color: rgba(101, 214, 164, .24);
+  color: #9ce7bf;
+  box-shadow: inset 0 0 18px rgba(58, 193, 130, .05);
+}
+
+.sync-pill.syncing,
+.sync-pill.connecting {
+  border-color: rgba(246, 196, 83, .2);
+  color: #f6d878;
+}
+
+.sync-pill.offline {
+  border-color: rgba(255, 126, 96, .22);
+  color: #ff9b82;
+}
+
+.x-form-modal {
+  position: relative;
+  z-index: 2;
+  width: min(620px, calc(100vw - 28px));
+  max-height: min(820px, calc(100vh - 30px));
+  overflow: auto;
+  display: grid;
+  gap: 17px;
+  padding: 30px;
+  border: 1px solid rgba(246, 196, 83, .18);
+  border-radius: 28px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.09), rgba(255,255,255,.025)),
+    rgba(8, 5, 14, .92);
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.09),
+    0 35px 100px rgba(0,0,0,.58),
+    0 0 55px rgba(103, 75, 210, .09);
+  backdrop-filter: blur(28px) saturate(1.25);
+}
+
+.x-form-modal h2 {
+  margin: 3px 0 5px;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1;
+}
+
+.x-form-modal label,
+.capture-type {
+  display: grid;
+  gap: 7px;
+}
+
+.x-form-modal label > span,
+.capture-type > span {
+  color: rgba(255,255,255,.42);
+  font-size: .65rem;
+  text-transform: uppercase;
+  letter-spacing: .11em;
+}
+
+.x-form-modal input,
+.x-form-modal select,
+.x-form-modal textarea,
+.capture-type select {
+  width: 100%;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 15px;
+  outline: none;
+  padding: 12px 13px;
+  background: rgba(255,255,255,.045);
+  color: rgba(255,255,255,.88);
+  font: inherit;
+  transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+.x-form-modal select,
+.capture-type select {
+  color-scheme: dark;
+}
+
+.x-form-modal textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.x-form-modal input:focus,
+.x-form-modal select:focus,
+.x-form-modal textarea:focus,
+.capture-type select:focus {
+  border-color: rgba(246,196,83,.38);
+  background: rgba(255,255,255,.065);
+  box-shadow: 0 0 0 3px rgba(246,196,83,.055);
+}
+
+.x-form-modal label small {
+  justify-self: end;
+  color: rgba(255,255,255,.28);
+  font-size: .65rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 150px;
+  gap: 12px;
+}
+
+.check-row {
+  grid-template-columns: auto 1fr !important;
+  align-items: start;
+  gap: 10px !important;
+  padding: 12px 13px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 15px;
+  background: rgba(255,255,255,.025);
+}
+
+.check-row input {
+  width: auto;
+  margin-top: 2px;
+  accent-color: #f6c453;
+}
+
+.check-row span {
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  font-size: .78rem !important;
+  line-height: 1.4;
+  color: rgba(255,255,255,.64) !important;
+}
+
+.completion-modal {
+  width: min(540px, calc(100vw - 28px));
+}
+
+.capture-type {
+  margin-top: -3px;
+}
+
+.next-step-button {
+  width: 100%;
+  appearance: none;
+  text-align: left;
+  cursor: pointer;
+  border: 0;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  border-radius: 0;
+  background: transparent;
+  transition: background .16s ease, opacity .16s ease, transform .16s ease;
+}
+
+.next-step-button:hover {
+  background: rgba(255,255,255,.025);
+  transform: translateX(3px);
+}
+
+.next-step-button.done {
+  opacity: .48;
+}
+
+.next-step-button.done p {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.next-step-button.done span {
+  color: #8ce2ad;
+}
+
+.empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+@media (max-width: 680px) {
+  .sync-pill {
+    width: 34px;
+    padding: 0;
+    justify-content: center;
+    font-size: 0;
+  }
+
+  .x-form-modal {
+    padding: 23px 18px;
+    border-radius: 22px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .top-actions {
+    max-width: calc(100vw - 92px);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .top-actions::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+
+/* Motherboard asset: Paper Shaders DotOrbit used as a restrained focus sigil. */
+.paper-orbit-accent {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: min(64vw, 720px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  opacity: .12;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  mask-image: radial-gradient(circle, black 0 38%, transparent 72%);
+  -webkit-mask-image: radial-gradient(circle, black 0 38%, transparent 72%);
+}
+
+.paper-orbit-accent canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.locked .paper-orbit-accent {
+  opacity: .075;
+  width: min(58vw, 620px);
+}
+
+@media (max-width: 680px) {
+  .paper-orbit-accent {
+    width: 112vw;
+    opacity: .085;
+  }
+
+  .locked .paper-orbit-accent {
+    width: 104vw;
+    opacity: .055;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paper-orbit-accent {
+    opacity: .045;
+  }
+}
