@@ -2745,3 +2745,45 @@ button {
     display: none;
   }
 }
+
+
+/* Official StarrTree logo asset */
+.tree-mark.official-mark {
+  object-fit: contain;
+  object-position: center;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter:
+    drop-shadow(0 0 7px rgba(255, 208, 68, .18))
+    drop-shadow(0 5px 12px rgba(0, 0, 0, .28));
+}
+
+.brand .tree-mark.official-mark {
+  transform: scale(1.08);
+}
+
+.core-sigil .tree-mark.official-mark {
+  width: 42px;
+  height: 42px;
+  transform: scale(1.18);
+}
+
+.wheel-core > .tree-mark.official-mark {
+  object-fit: contain;
+}
+
+.starrx-silhouette .tree-mark.official-mark {
+  object-fit: contain;
+  opacity: .86;
+}
+
+@media (max-width: 680px) {
+  .brand .tree-mark.official-mark {
+    transform: scale(1.12);
+  }
+
+  .core-sigil .tree-mark.official-mark {
+    width: 36px;
+    height: 36px;
+  }
+}
