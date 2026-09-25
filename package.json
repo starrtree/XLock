@@ -16,7 +16,8 @@
     "react-dom": "^19.0.0",
     "lucide-react": "^0.468.0",
     "@paper-design/shaders-react": "0.0.81",
-    "@supabase/supabase-js": "^2.117.0"
+    "@supabase/supabase-js": "^2.117.0",
+    "motion": "^13.4.4"
   },
   "devDependencies": {}
 }
