@@ -4,6 +4,7 @@ import CosmicField from './components/CosmicField.jsx'
 import StarCursor from './components/StarCursor.jsx'
 import StarrVis from './components/StarrVis.jsx'
 import SpotlightPanel from './components/SpotlightPanel.jsx'
+import starrtreeLogo from './assets/starrtree-logo.png'
 import NewXModal from './components/NewXModal.jsx'
 import CompletionModal from './components/CompletionModal.jsx'
 import {
@@ -154,21 +155,13 @@ function normalizeAngle(delta) {
 
 function TreeXMark({ compact = false }) {
   return (
-    <svg className={compact ? 'tree-mark compact' : 'tree-mark'} viewBox="0 0 200 200" aria-hidden="true">
-      <defs>
-        <linearGradient id="goldMark" x1="0" x2="1">
-          <stop offset="0" stopColor="#f9dd83" />
-          <stop offset=".45" stopColor="#f2b632" />
-          <stop offset="1" stopColor="#fff1ad" />
-        </linearGradient>
-      </defs>
-      <path d="M35 42 L100 100 L165 42 M35 158 L100 100 L165 158" fill="none" stroke="url(#goldMark)" strokeWidth="9" strokeLinecap="round" />
-      <path d="M100 36 L100 164" stroke="url(#goldMark)" strokeWidth="6" strokeLinecap="round" />
-      <path d="M100 78 C77 62 63 57 50 56 M100 82 C122 65 137 59 151 57 M100 96 C77 88 64 88 50 91 M100 98 C122 90 136 89 151 92" fill="none" stroke="url(#goldMark)" strokeWidth="4" strokeLinecap="round" />
-      <path d="M100 120 C81 134 72 147 67 164 M100 120 C119 134 129 147 135 164 M100 124 C92 142 89 157 88 174 M100 124 C108 142 112 157 112 174" fill="none" stroke="url(#goldMark)" strokeWidth="4" strokeLinecap="round" />
-      <circle cx="100" cy="100" r="8" fill="#fff2b3" />
-      <path d="M100 18 L104 30 L117 34 L104 38 L100 51 L96 38 L83 34 L96 30 Z" fill="#fff2b3" />
-    </svg>
+    <img
+      className={compact ? 'tree-mark compact official-mark' : 'tree-mark official-mark'}
+      src={starrtreeLogo}
+      alt=""
+      aria-hidden="true"
+      draggable="false"
+    />
   )
 }
 
