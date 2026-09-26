@@ -5,6 +5,7 @@ import './styles.css'
 import './premium-surfaces.css'
 import './liquid-metal.css'
 import './instrument-v2.css'
+import './interaction-fixes.css'
 
 class XLockErrorBoundary extends React.Component {
   constructor(props) {
@@ -39,6 +40,55 @@ class XLockErrorBoundary extends React.Component {
   }
 }
 
+function installSelectionDismissal() {
+  const getSelectedSegment = () => document.querySelector('.app.unlocked .task-segment.selected')
+
+  const dismissSelectedX = () => {
+    const selectedSegment = getSelectedSegment()
+    if (!selectedSegment) return
+
+    // Re-use the existing React task click handler so there is one source of
+    // truth for changing selectedId instead of mutating React state externally.
+    selectedSegment.dispatchEvent(new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    }))
+  }
+
+  const handleOutsideClick = (event) => {
+    if (!(event.target instanceof Element) || !getSelectedSegment()) return
+
+    // Interacting with an X, its inspection HUD, or an actual control should
+    // never dismiss the inspection accidentally. Everything else on the
+    // unlocked canvas behaves like a normal click-away surface.
+    if (event.target.closest([
+      '.task-segment',
+      '.selection-card',
+      '.top-actions',
+      '.brand',
+      '.capture-fab',
+      '.modal-scrim',
+      '.footer-bar',
+      'button',
+      'a',
+      'input',
+      'textarea',
+      'select',
+      'label',
+    ].join(','))) return
+
+    dismissSelectedX()
+  }
+
+  const handleEscape = (event) => {
+    if (event.key === 'Escape' && getSelectedSegment()) dismissSelectedX()
+  }
+
+  document.addEventListener('click', handleOutsideClick)
+  document.addEventListener('keydown', handleEscape)
+}
+
 const root = document.getElementById('root')
 
 if (!root) {
@@ -51,4 +101,6 @@ if (!root) {
       </XLockErrorBoundary>
     </React.StrictMode>,
   )
+
+  installSelectionDismissal()
 }
