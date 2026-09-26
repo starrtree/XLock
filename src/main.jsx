@@ -4,6 +4,7 @@ import App from './App.jsx'
 import './styles.css'
 import './premium-surfaces.css'
 import './liquid-metal.css'
+import './instrument-v2.css'
 
 class XLockErrorBoundary extends React.Component {
   constructor(props) {
