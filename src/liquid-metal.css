@@ -1,0 +1,55 @@
+/* Actual Paper Shaders LiquidMetal layer. One instance only for mobile performance. */
+.paper-cosmic-field {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.paper-metal-accent {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 54%;
+  width: min(108vmin, 1080px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  opacity: .095;
+  mix-blend-mode: screen;
+  filter: saturate(.7) contrast(1.14) brightness(.82);
+  mask-image: radial-gradient(circle, #000 0 33%, rgba(0,0,0,.92) 44%, transparent 76%);
+  -webkit-mask-image: radial-gradient(circle, #000 0 33%, rgba(0,0,0,.92) 44%, transparent 76%);
+}
+
+.paper-metal-accent canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.locked .paper-metal-accent {
+  width: min(95vmin, 860px);
+  opacity: .065;
+}
+
+@media (max-width: 680px) {
+  .paper-metal-accent {
+    top: 55%;
+    width: 132vw;
+    opacity: .065;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 540px) {
+  .paper-metal-accent {
+    left: 62%;
+    top: 54%;
+    width: 90vh;
+    opacity: .07;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paper-metal-accent {
+    opacity: .035;
+  }
+}
