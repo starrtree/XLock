@@ -98,47 +98,6 @@
   to { opacity: 1; transform: translate(-50%, 0); }
 }
 
-/* ---------------------------------------------------------
-   X BLOCK SELECTION / ORIENTATION
-   Whichever X block is being inspected becomes the canonical
-   top / 12 o'clock block. Labels and the UNI core counter-rotate
-   so readable UI stays upright while the physical wheel turns.
-   --------------------------------------------------------- */
-.task-wheel {
-  --xblock-rotation: 0deg;
-  --xblock-counter-rotation: 0deg;
-  transform: rotate(var(--xblock-rotation)) !important;
-  transform-origin: 350px 350px !important;
-  transition: transform .52s cubic-bezier(.2,.82,.18,1) !important;
-  will-change: transform;
-}
-
-.task-wheel.is-xblock-dragging {
-  transition: none !important;
-}
-
-.task-wheel .segment-label,
-.task-wheel .wheel-core {
-  transform: rotate(var(--xblock-counter-rotation));
-  transform-origin: center;
-  transition: transform .52s cubic-bezier(.2,.82,.18,1);
-}
-
-.task-wheel.is-xblock-dragging .segment-label,
-.task-wheel.is-xblock-dragging .wheel-core {
-  transition: none;
-}
-
-.task-wheel .task-segment.selected .segment-label {
-  transform: rotate(var(--xblock-counter-rotation)) scale(1.08) !important;
-}
-
-/* The selected X block should feel like the wheel intentionally presented it
-   to UNI, rather than merely highlighting an arbitrary slice. */
-.task-wheel .task-segment.selected path {
-  transform-origin: center;
-}
-
 @media (max-width: 680px) {
   .starrx-silhouette .tree-mark.official-mark {
     width: 108px !important;
@@ -154,11 +113,5 @@
 @media (prefers-reduced-motion: reduce) {
   .app.unlocked:has(.task-segment.selected) .unlocked-stage::after {
     animation: none;
-  }
-
-  .task-wheel,
-  .task-wheel .segment-label,
-  .task-wheel .wheel-core {
-    transition-duration: .01ms !important;
   }
 }
