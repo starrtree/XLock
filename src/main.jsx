@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import './styles.css'
 import './premium-surfaces.css'
+import './liquid-metal.css'
 
 class XLockErrorBoundary extends React.Component {
   constructor(props) {
