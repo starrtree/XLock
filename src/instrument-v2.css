@@ -1,0 +1,661 @@
+/* XLock Instrument V2
+   A visibly different hardware / optical UI pass.
+   This file intentionally overrides the earlier prototype styling.
+*/
+
+:root {
+  --v2-gold: #f0c65f;
+  --v2-gold-hot: #fff1b0;
+  --v2-violet: #8e6cff;
+  --v2-ink: #050507;
+  --v2-panel: rgba(10, 9, 13, .78);
+}
+
+/* =========================
+   APP SHELL / DEPTH
+   ========================= */
+.app.unlocked {
+  background:
+    radial-gradient(70vw 65vw at 49% 48%, rgba(91, 61, 155, .14), transparent 58%),
+    radial-gradient(42vw 34vw at 24% 33%, rgba(188, 112, 34, .14), transparent 65%),
+    radial-gradient(34vw 30vw at 82% 68%, rgba(40, 68, 145, .09), transparent 70%),
+    #040407 !important;
+}
+
+.app.unlocked::after {
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.52), transparent 21%, transparent 79%, rgba(0,0,0,.56)),
+    radial-gradient(circle at 50% 45%, transparent 0 38%, rgba(0,0,0,.20) 66%, rgba(0,0,0,.52) 100%) !important;
+}
+
+/* Subtle physical noise / anodized texture */
+.app.unlocked::before {
+  opacity: .34 !important;
+  mix-blend-mode: screen;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(255,255,255,.85) 0 1px, transparent 1.35px),
+    radial-gradient(circle at 72% 33%, rgba(214,224,255,.65) 0 1px, transparent 1.35px),
+    radial-gradient(circle at 83% 72%, rgba(255,214,120,.62) 0 1px, transparent 1.35px),
+    repeating-linear-gradient(115deg, rgba(255,255,255,.012) 0 1px, transparent 1px 4px) !important;
+  background-size: 240px 240px, 310px 310px, 390px 390px, 5px 5px !important;
+}
+
+/* =========================
+   HEADER = HARDWARE COMMAND DOCK
+   ========================= */
+.topbar {
+  width: min(1540px, calc(100% - 52px)) !important;
+  padding: 22px 0 8px !important;
+}
+
+.brand {
+  gap: 14px !important;
+}
+
+.brand .tree-mark.compact {
+  width: 48px !important;
+  height: 48px !important;
+  padding: 7px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,226,135,.16);
+  background:
+    radial-gradient(circle at 34% 22%, rgba(255,255,255,.13), transparent 30%),
+    linear-gradient(145deg, #17130b, #09090c 62%, #050507);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.14) inset,
+    0 -6px 12px rgba(0,0,0,.35) inset,
+    0 6px 0 rgba(0,0,0,.34),
+    0 13px 28px rgba(0,0,0,.34),
+    0 0 22px rgba(240,198,95,.08);
+}
+
+.brand span {
+  font-size: 1.08rem !important;
+  letter-spacing: .18em !important;
+}
+
+.brand small {
+  font-size: .61rem !important;
+  letter-spacing: .22em !important;
+}
+
+.top-actions {
+  gap: 11px !important;
+  padding: 8px !important;
+  border-radius: 24px !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.012) 44%, rgba(0,0,0,.18)),
+    rgba(7,7,10,.72) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.11) inset,
+    0 -1px 0 rgba(0,0,0,.72) inset,
+    0 10px 0 rgba(0,0,0,.14),
+    0 22px 48px rgba(0,0,0,.34),
+    0 0 0 1px rgba(240,198,95,.018) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(1.5) !important;
+  backdrop-filter: blur(30px) saturate(1.5) !important;
+}
+
+.top-actions .ghost-button,
+.top-actions .sync-pill {
+  min-height: 49px !important;
+  padding: 0 18px !important;
+  gap: 9px !important;
+  border-radius: 16px !important;
+  font-size: .76rem !important;
+  font-weight: 700;
+  letter-spacing: .02em;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  background:
+    radial-gradient(circle at 30% 4%, rgba(255,255,255,.16), transparent 28%),
+    linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.015) 45%, rgba(0,0,0,.24)),
+    linear-gradient(145deg, #1b1a20, #0c0b10 62%, #060608) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.16) inset,
+    0 -7px 12px rgba(0,0,0,.32) inset,
+    0 5px 0 rgba(0,0,0,.44),
+    0 11px 18px rgba(0,0,0,.28),
+    0 0 0 1px rgba(255,255,255,.018) !important;
+}
+
+.top-actions .ghost-button svg,
+.top-actions .sync-pill svg {
+  width: 17px !important;
+  height: 17px !important;
+}
+
+.top-actions .sync-pill.synced {
+  border-color: rgba(72,236,160,.28) !important;
+  background:
+    radial-gradient(circle at 34% 8%, rgba(150,255,203,.18), transparent 31%),
+    linear-gradient(180deg, rgba(49,206,129,.12), rgba(12,44,30,.10) 47%, rgba(0,0,0,.23)),
+    linear-gradient(145deg, #10261b, #07100b 65%, #050706) !important;
+  box-shadow:
+    0 1px 0 rgba(185,255,219,.18) inset,
+    0 -7px 12px rgba(0,0,0,.31) inset,
+    0 5px 0 rgba(0,0,0,.42),
+    0 11px 18px rgba(0,0,0,.28),
+    0 0 25px rgba(74,235,159,.08) !important;
+}
+
+@media (hover:hover) and (pointer:fine) {
+  .top-actions .ghost-button:hover,
+  .top-actions .sync-pill:hover {
+    transform: translateY(-3px) scale(1.018) !important;
+    border-color: rgba(255,225,137,.30) !important;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.20) inset,
+      0 -7px 12px rgba(0,0,0,.28) inset,
+      0 8px 0 rgba(0,0,0,.38),
+      0 16px 26px rgba(0,0,0,.34),
+      0 0 28px rgba(240,198,95,.08) !important;
+  }
+}
+
+/* =========================
+   DESKTOP STAGE RECOMPOSITION
+   ========================= */
+@media (min-width: 1100px) {
+  .unlocked-stage {
+    width: min(1540px, 100%) !important;
+    min-height: calc(100vh - 86px) !important;
+    padding: 4px 26px 90px !important;
+    grid-template-columns: minmax(290px, .76fr) minmax(700px, 1.64fr) minmax(280px, .72fr) !important;
+    gap: 34px !important;
+  }
+
+  .intro-copy {
+    position: relative;
+    padding: 34px 30px 36px !important;
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,.055);
+    background:
+      linear-gradient(145deg, rgba(255,255,255,.032), rgba(255,255,255,.004) 44%, rgba(0,0,0,.08)),
+      rgba(7,7,10,.18);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.045) inset,
+      0 25px 70px rgba(0,0,0,.24);
+    -webkit-backdrop-filter: blur(18px) saturate(1.15);
+    backdrop-filter: blur(18px) saturate(1.15);
+  }
+
+  .intro-copy::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 32px;
+    bottom: 32px;
+    width: 2px;
+    border-radius: 99px;
+    background: linear-gradient(transparent, var(--v2-gold-hot), var(--v2-gold), transparent);
+    box-shadow: 0 0 18px rgba(240,198,95,.34);
+  }
+
+  .intro-copy h1 {
+    max-width: 360px !important;
+    font-size: clamp(4.3rem, 4.8vw, 6.8rem) !important;
+    line-height: .83 !important;
+    letter-spacing: -.055em;
+  }
+
+  .intro-copy h1 span:first-child {
+    color: #fffaf0;
+  }
+
+  .intro-copy h1 span:last-child {
+    color: rgba(224,219,226,.61);
+  }
+
+  .intro-copy > p:last-child {
+    max-width: 310px !important;
+    color: rgba(255,255,255,.58) !important;
+  }
+
+  .wheel-shell {
+    width: min(56vw, 790px) !important;
+  }
+
+  /* Selection HUD now lives beside the dial rather than falling under the fold. */
+  .selection-card {
+    left: calc(100% + 28px) !important;
+    top: 44% !important;
+    bottom: auto !important;
+    width: 360px !important;
+    padding: 0 !important;
+  }
+
+  .selection-card.visible {
+    pointer-events: auto;
+  }
+
+  .selection-material {
+    padding: 25px 24px 22px !important;
+    border-radius: 26px !important;
+  }
+
+  .selection-card h2 {
+    font-size: 1.85rem !important;
+    line-height: 1.02;
+    margin: 8px 0 10px !important;
+  }
+
+  .selection-next {
+    gap: 9px !important;
+  }
+
+  .selection-next span {
+    padding: 9px 10px;
+    border: 1px solid rgba(255,255,255,.055);
+    border-radius: 12px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.008)),
+      rgba(0,0,0,.14);
+    box-shadow: 0 1px 0 rgba(255,255,255,.035) inset, 0 7px 18px rgba(0,0,0,.18);
+  }
+
+  .commit-instruction {
+    min-height: 48px;
+    border: 1px solid rgba(255,218,117,.16);
+    background:
+      radial-gradient(circle at 10% 50%, rgba(240,198,95,.13), transparent 32%),
+      linear-gradient(180deg, rgba(255,255,255,.035), rgba(0,0,0,.12)),
+      rgba(36,26,9,.22) !important;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.05) inset,
+      0 6px 17px rgba(0,0,0,.20);
+  }
+
+  .starrvis-perch {
+    align-self: end !important;
+    transform: translateY(-42px);
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .starrvis-perch .starrvis-body {
+    width: 118px !important;
+    height: 118px !important;
+    filter: drop-shadow(0 18px 22px rgba(0,0,0,.45));
+  }
+
+  .starrvis-perch .starrvis-bubble {
+    border-radius: 16px !important;
+    border: 1px solid rgba(255,234,171,.13) !important;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(255,255,255,.06), transparent 34%),
+      rgba(8,8,11,.72) !important;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.05) inset,
+      0 14px 34px rgba(0,0,0,.32) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(1.3);
+    backdrop-filter: blur(24px) saturate(1.3);
+  }
+}
+
+/* =========================
+   DIAL = MACHINED OPTICAL INSTRUMENT
+   ========================= */
+.wheel-shell {
+  border-radius: 50%;
+  isolation: isolate;
+}
+
+/* illuminated outer bearing */
+.wheel-shell::after {
+  content: "";
+  position: absolute;
+  inset: -2.7%;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    conic-gradient(
+      from 10deg,
+      transparent 0 8%,
+      rgba(255,241,191,.42) 10%,
+      rgba(255,255,255,.08) 13%,
+      transparent 20% 45%,
+      rgba(125,91,255,.28) 50%,
+      transparent 57% 77%,
+      rgba(240,198,95,.24) 84%,
+      transparent 91% 100%
+    );
+  -webkit-mask: radial-gradient(circle, transparent 0 93%, #000 93.35% 94.3%, transparent 94.7% 100%);
+  mask: radial-gradient(circle, transparent 0 93%, #000 93.35% 94.3%, transparent 94.7% 100%);
+  filter: blur(.2px) drop-shadow(0 0 12px rgba(240,198,95,.18));
+  animation: v2BearingSpin 24s linear infinite;
+}
+
+@keyframes v2BearingSpin { to { transform: rotate(360deg); } }
+
+.task-wheel {
+  position: relative;
+  z-index: 2;
+  filter:
+    drop-shadow(0 6px 0 rgba(0,0,0,.24))
+    drop-shadow(0 34px 52px rgba(0,0,0,.53)) !important;
+}
+
+.task-segment path {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform .3s cubic-bezier(.2,.85,.2,1),
+    filter .3s ease,
+    opacity .25s ease,
+    stroke-width .25s ease !important;
+  filter:
+    brightness(.66)
+    saturate(.74)
+    contrast(1.18)
+    drop-shadow(0 1px 0 rgba(255,255,255,.08))
+    drop-shadow(0 7px 0 rgba(0,0,0,.28))
+    drop-shadow(0 14px 18px rgba(0,0,0,.30)) !important;
+}
+
+.task-segment:hover path,
+.task-segment:focus-visible path {
+  transform: scale(1.018);
+  filter:
+    brightness(.93)
+    saturate(.88)
+    contrast(1.1)
+    drop-shadow(0 1px 0 rgba(255,255,255,.12))
+    drop-shadow(0 8px 0 rgba(0,0,0,.30))
+    drop-shadow(0 16px 24px rgba(0,0,0,.33))
+    drop-shadow(0 0 18px rgba(240,198,95,.08)) !important;
+}
+
+.task-segment.selected path {
+  transform: scale(1.052);
+  filter:
+    brightness(1.24)
+    saturate(1.08)
+    contrast(1.05)
+    drop-shadow(0 2px 0 rgba(255,255,255,.30))
+    drop-shadow(0 12px 0 rgba(37,24,6,.44))
+    drop-shadow(0 22px 28px rgba(0,0,0,.46))
+    drop-shadow(0 0 19px rgba(255,225,134,.31))
+    drop-shadow(0 0 38px rgba(123,91,255,.16)) !important;
+}
+
+.has-selection .task-segment:not(.selected) path {
+  filter:
+    brightness(.42)
+    saturate(.48)
+    contrast(1.1)
+    drop-shadow(0 7px 0 rgba(0,0,0,.22)) !important;
+}
+
+.segment-label {
+  width: calc(100% - 10px) !important;
+  height: calc(100% - 8px) !important;
+  margin: 4px 5px;
+  padding: 7px 9px;
+  border-radius: 13px;
+  border: 1px solid rgba(255,255,255,.055);
+  background:
+    radial-gradient(circle at 35% 0%, rgba(255,255,255,.075), transparent 36%),
+    linear-gradient(180deg, rgba(8,8,11,.55), rgba(5,5,7,.23));
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.05) inset,
+    0 8px 17px rgba(0,0,0,.20);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease, background .25s ease;
+}
+
+.task-segment.selected .segment-label {
+  transform: scale(1.08);
+  border-color: rgba(255,240,186,.26);
+  background:
+    radial-gradient(circle at 34% 2%, rgba(255,255,255,.18), transparent 38%),
+    linear-gradient(180deg, rgba(36,30,21,.76), rgba(8,8,11,.54));
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.12) inset,
+    0 8px 21px rgba(0,0,0,.28),
+    0 0 22px rgba(240,198,95,.10);
+}
+
+.segment-label strong {
+  color: rgba(255,255,255,.84);
+  letter-spacing: -.01em;
+}
+
+.task-segment.selected .segment-label strong {
+  color: #fff9e9;
+  text-shadow: 0 0 12px rgba(255,229,151,.14);
+}
+
+/* Multi-ring center bearing */
+.core-rim-disc {
+  fill: rgba(4,4,6,.92) !important;
+  stroke: rgba(255,222,124,.50) !important;
+  stroke-width: 5 !important;
+  filter:
+    drop-shadow(0 2px 0 rgba(255,255,255,.09))
+    drop-shadow(0 11px 0 rgba(0,0,0,.34))
+    drop-shadow(0 19px 30px rgba(0,0,0,.34));
+}
+
+.core-inner-disc {
+  fill: rgba(3,3,5,.86) !important;
+  stroke: rgba(139,101,255,.11) !important;
+  stroke-width: 2 !important;
+}
+
+.wheel-core {
+  filter: drop-shadow(0 15px 24px rgba(0,0,0,.42));
+}
+
+.core-sigil {
+  width: 78px !important;
+  height: 78px !important;
+  border-radius: 50% !important;
+  border-width: 1px !important;
+}
+
+.core-sigil .tree-mark.compact {
+  width: 58px !important;
+  height: 58px !important;
+}
+
+.wheel-core > strong {
+  margin-top: 8px;
+  color: #f3d780;
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-shadow: 0 0 10px rgba(240,198,95,.13);
+}
+
+.wheel-core > span {
+  bottom: 29px !important;
+  font-size: 11px !important;
+  letter-spacing: .08em !important;
+  color: rgba(255,255,255,.74) !important;
+}
+
+.wheel-core > small {
+  position: absolute;
+  bottom: 13px;
+  font-size: 8px;
+  color: rgba(255,255,255,.37);
+  letter-spacing: .08em;
+}
+
+.north-star-marker span {
+  width: 4px !important;
+  height: 52px !important;
+  border-radius: 99px;
+  background: linear-gradient(#fff9cf, #edbe4a 45%, rgba(237,190,74,.12), transparent) !important;
+  box-shadow: 0 0 17px rgba(240,198,95,.62) !important;
+}
+
+/* =========================
+   SELECTED X = FLOATING OPTICAL HUD
+   ========================= */
+.selection-material {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(rgba(10,10,14,.90), rgba(5,5,7,.94)) padding-box,
+    conic-gradient(from 140deg,
+      rgba(255,255,255,.22),
+      rgba(240,198,95,.52),
+      rgba(132,97,255,.34),
+      rgba(255,255,255,.08),
+      rgba(240,198,95,.42)) border-box !important;
+  border: 1px solid transparent !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.12) inset,
+    0 -16px 36px rgba(0,0,0,.20) inset,
+    0 8px 0 rgba(0,0,0,.28),
+    0 22px 50px rgba(0,0,0,.42),
+    0 0 40px rgba(115,81,255,.07) !important;
+  -webkit-backdrop-filter: blur(34px) saturate(1.5);
+  backdrop-filter: blur(34px) saturate(1.5);
+}
+
+.selection-material > * {
+  position: relative;
+  z-index: 2;
+}
+
+.selection-meta {
+  display: flex !important;
+  justify-content: space-between;
+  color: var(--v2-gold) !important;
+  font-size: .62rem !important;
+  letter-spacing: .17em !important;
+}
+
+/* =========================
+   FOOTER / CAPTURE
+   ========================= */
+.footer-bar {
+  width: 430px !important;
+  min-height: 46px;
+  padding: 0 15px !important;
+  bottom: 18px !important;
+  border-radius: 17px !important;
+  border: 1px solid rgba(255,255,255,.075) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.008) 45%, rgba(0,0,0,.13)),
+    rgba(7,7,10,.80) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.08) inset,
+    0 5px 0 rgba(0,0,0,.24),
+    0 14px 32px rgba(0,0,0,.28) !important;
+}
+
+.capture-fab {
+  width: 64px !important;
+  right: 28px !important;
+  bottom: 26px !important;
+  border-width: 1px !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.22) inset,
+    0 -10px 18px rgba(0,0,0,.35) inset,
+    0 8px 0 rgba(0,0,0,.35),
+    0 18px 33px rgba(0,0,0,.44),
+    0 0 0 8px rgba(240,198,95,.025),
+    0 0 38px rgba(130,88,255,.15) !important;
+}
+
+/* =========================
+   MOBILE: SAME MATERIAL LANGUAGE, NOT SHRUNK DESKTOP
+   ========================= */
+@media (max-width: 680px) {
+  .topbar {
+    width: calc(100% - 24px) !important;
+    padding-top: 14px !important;
+    align-items: center !important;
+  }
+
+  .brand .tree-mark.compact {
+    width: 42px !important;
+    height: 42px !important;
+    padding: 6px;
+    border-radius: 13px;
+  }
+
+  .top-actions {
+    border-radius: 20px !important;
+    padding: 5px !important;
+    gap: 6px !important;
+  }
+
+  .top-actions .ghost-button,
+  .top-actions .sync-pill {
+    width: 47px !important;
+    height: 47px !important;
+    min-height: 47px !important;
+    padding: 0 !important;
+    border-radius: 14px !important;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.16) inset,
+      0 -6px 10px rgba(0,0,0,.32) inset,
+      0 5px 0 rgba(0,0,0,.34),
+      0 10px 18px rgba(0,0,0,.28) !important;
+  }
+
+  .intro-copy {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .wheel-shell {
+    filter: drop-shadow(0 24px 32px rgba(0,0,0,.40)) !important;
+  }
+
+  .task-segment.selected path {
+    transform: scale(1.035);
+    filter:
+      brightness(1.20)
+      saturate(1.05)
+      drop-shadow(0 1px 0 rgba(255,255,255,.24))
+      drop-shadow(0 8px 0 rgba(30,20,5,.38))
+      drop-shadow(0 15px 19px rgba(0,0,0,.42))
+      drop-shadow(0 0 16px rgba(255,225,134,.24)) !important;
+  }
+
+  .segment-label {
+    border-radius: 10px;
+    padding: 4px 5px;
+  }
+
+  .selection-card {
+    padding: 0 !important;
+  }
+
+  .selection-material {
+    padding: 18px !important;
+    border-radius: 22px !important;
+  }
+
+  .footer-bar {
+    width: min(390px, calc(100% - 110px)) !important;
+    min-height: 43px;
+    bottom: 14px !important;
+  }
+
+  .capture-fab {
+    width: 58px !important;
+    right: 18px !important;
+    bottom: 17px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wheel-shell::after,
+  .core-sigil::before,
+  .brand span,
+  .intro-copy .eyebrow,
+  .selection-meta,
+  .lock-status,
+  .starrvis-console-label {
+    animation: none !important;
+  }
+}
