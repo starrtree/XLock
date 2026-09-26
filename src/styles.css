@@ -2787,3 +2787,301 @@ button {
     height: 36px;
   }
 }
+
+
+/* Responsive alignment pass — 2026-09-26 */
+
+/* A single centered coordinate system for the unlocked experience. */
+.app.unlocked {
+  min-height: 100dvh;
+  overflow-x: clip;
+  overflow-y: auto;
+}
+
+.app.unlocked .topbar {
+  box-sizing: border-box;
+}
+
+.app.unlocked .unlocked-stage {
+  box-sizing: border-box;
+}
+
+.app.unlocked .wheel-shell {
+  box-sizing: border-box;
+}
+
+/* Floating utilities respect device safe areas. */
+.app.unlocked .capture-fab {
+  right: max(18px, env(safe-area-inset-right));
+  bottom: max(18px, env(safe-area-inset-bottom));
+}
+
+.app.unlocked .footer-bar {
+  bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+/* Phone portrait: one clean vertical axis, no off-screen dial labels. */
+@media (max-width: 680px) and (orientation: portrait) {
+  .app.unlocked .topbar {
+    width: calc(100% - 28px);
+    padding-top: max(12px, env(safe-area-inset-top));
+  }
+
+  .app.unlocked .brand small {
+    display: none;
+  }
+
+  .app.unlocked .unlocked-stage {
+    width: 100%;
+    padding: 10px 14px calc(116px + env(safe-area-inset-bottom));
+  }
+
+  .app.unlocked .intro-copy {
+    padding: 22px 8px 12px;
+  }
+
+  .app.unlocked .wheel-shell {
+    width: min(86vw, 404px);
+    margin: 12px auto 34px;
+  }
+
+  .app.unlocked .segment-label strong {
+    max-width: 88px;
+    font-size: 8.5px;
+  }
+
+  .app.unlocked .segment-label small {
+    font-size: 6.5px;
+  }
+
+  .app.unlocked .starrvis-perch {
+    left: max(14px, env(safe-area-inset-left));
+    bottom: calc(14px + env(safe-area-inset-bottom));
+  }
+
+  .app.unlocked .capture-fab {
+    right: max(14px, env(safe-area-inset-right));
+    bottom: calc(14px + env(safe-area-inset-bottom));
+  }
+
+  .app.unlocked .footer-bar {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    width: min(330px, calc(100% - 112px));
+    margin: -92px auto calc(18px + env(safe-area-inset-bottom));
+    z-index: 20;
+  }
+}
+
+/* Short phone landscape is its own layout, not a compressed desktop page. */
+@media (orientation: landscape) and (max-height: 540px) {
+  .app.unlocked {
+    min-height: 100dvh;
+    overflow-y: auto;
+  }
+
+  .app.unlocked .topbar {
+    width: calc(100% - 36px - env(safe-area-inset-left) - env(safe-area-inset-right));
+    min-height: 52px;
+    padding: max(8px, env(safe-area-inset-top)) 0 4px;
+  }
+
+  .app.unlocked .brand {
+    min-width: 150px;
+  }
+
+  .app.unlocked .brand small {
+    font-size: .48rem;
+    letter-spacing: .15em;
+  }
+
+  .app.unlocked .top-actions {
+    gap: 6px;
+  }
+
+  .app.unlocked .ghost-button,
+  .app.unlocked .sync-pill {
+    min-height: 34px;
+  }
+
+  .app.unlocked .unlocked-stage {
+    width: min(1120px, calc(100% - 32px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+    min-height: calc(100dvh - 58px);
+    padding: 2px 0 78px;
+    display: grid;
+    grid-template-columns: minmax(230px, .72fr) minmax(360px, 1.28fr) minmax(112px, .34fr);
+    align-items: center;
+    gap: 12px;
+  }
+
+  .app.unlocked .intro-copy {
+    align-self: center;
+    width: auto;
+    padding: 6px 0 6px 6px;
+    text-align: left;
+  }
+
+  .app.unlocked .intro-copy .eyebrow {
+    margin-bottom: 7px;
+    font-size: .48rem;
+    letter-spacing: .18em;
+  }
+
+  .app.unlocked .intro-copy h1 {
+    display: grid;
+    max-width: 310px;
+    margin: 0;
+    font-size: clamp(2.45rem, 6.2vw, 4.5rem);
+    line-height: .86;
+  }
+
+  .app.unlocked .intro-copy > p:last-child {
+    max-width: 300px;
+    margin: 13px 0 0;
+    font-size: .67rem;
+    line-height: 1.45;
+  }
+
+  .app.unlocked .wheel-shell {
+    width: min(64vh, 46vw, 470px);
+    margin: 2px auto 8px;
+  }
+
+  .app.unlocked .wheel-shell.has-selection {
+    margin-bottom: 8px;
+  }
+
+  .app.unlocked .segment-label strong {
+    max-width: 90px;
+    font-size: 8px;
+  }
+
+  .app.unlocked .segment-label small {
+    font-size: 6.5px;
+  }
+
+  .app.unlocked .core-sigil {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 3px;
+  }
+
+  .app.unlocked .core-sigil .tree-mark.compact {
+    width: 32px;
+    height: 32px;
+  }
+
+  .app.unlocked .wheel-core {
+    gap: 3px;
+  }
+
+  .app.unlocked .wheel-core strong {
+    font-size: 6.5px;
+  }
+
+  .app.unlocked .wheel-core span {
+    max-width: 104px;
+    font-size: 8.5px;
+  }
+
+  .app.unlocked .wheel-core small {
+    font-size: 6px;
+  }
+
+  .app.unlocked .selection-card {
+    top: 50%;
+    left: calc(100% + 14px);
+    width: min(290px, 35vw);
+    transform: translateY(-50%);
+  }
+
+  .app.unlocked .selection-card.visible {
+    transform: translateY(-50%);
+  }
+
+  .app.unlocked .selection-material {
+    padding: 13px 14px 12px;
+    border-radius: 17px;
+  }
+
+  .app.unlocked .selection-card h2 {
+    font-size: 1rem;
+  }
+
+  .app.unlocked .selection-card .selection-material > p {
+    font-size: .62rem;
+  }
+
+  .app.unlocked .selection-next {
+    margin: 8px 0;
+  }
+
+  .app.unlocked .selection-next span {
+    font-size: .59rem;
+  }
+
+  .app.unlocked .commit-instruction {
+    min-height: 34px;
+    margin-top: 7px;
+    font-size: .58rem;
+  }
+
+  .app.unlocked .starrvis-perch {
+    position: static;
+    align-self: center;
+    width: 112px;
+    min-width: 0;
+    padding: 8px 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .app.unlocked .starrvis-console-label {
+    display: block;
+    font-size: .42rem;
+  }
+
+  .app.unlocked .starrvis-perch .starrvis-compact {
+    width: 72px;
+  }
+
+  .app.unlocked .starrvis-perch .starrvis-bubble {
+    display: none;
+  }
+
+  .app.unlocked .footer-bar {
+    position: fixed;
+    left: 50%;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    width: min(560px, calc(100% - 180px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+    transform: translateX(-50%);
+    padding: 7px 12px;
+    font-size: .62rem;
+  }
+
+  .app.unlocked .capture-fab {
+    right: max(14px, env(safe-area-inset-right));
+    bottom: max(10px, env(safe-area-inset-bottom));
+    width: 46px;
+  }
+}
+
+/* Wider landscape/tablet: preserve the three-column instrument composition,
+   but keep the footer below the dial instead of slicing through it. */
+@media (orientation: landscape) and (min-height: 541px) and (max-width: 1180px) {
+  .app.unlocked .unlocked-stage {
+    padding-bottom: 92px;
+  }
+
+  .app.unlocked .wheel-shell {
+    width: min(56vw, 560px);
+  }
+
+  .app.unlocked .footer-bar {
+    width: min(560px, calc(100% - 150px));
+  }
+}
