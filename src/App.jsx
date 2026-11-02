@@ -264,8 +264,8 @@ function ImportXsModal({ onClose, onImport }) {
         if (!Array.isArray(parsed)) throw new Error('Expected a JSON array.')
         rows = parsed.map(x => [x.status ?? '', x.title ?? x['X / Commitment'] ?? '', x.definitionOfDone ?? x['Definition of Done / Outcome'] ?? '', '', x.timing ?? '', x.nextAction ?? x['Next Action'] ?? ''])
       } else {
-        rows = raw.trim().split(/\\r?\\n/).map(line => line.split('\\t'))
-        if (rows[0]?.some(x => /X \\/ Commitment|Status/i.test(x))) rows.shift()
+        rows = raw.trim().split(/\r?\n/).map(line => line.split('\t'))
+        if (rows[0]?.some(x => /X \/ Commitment|Status/i.test(x))) rows.shift()
       }
       return rows.map((cells, index) => ({
         status: cells[0] ?? '',
@@ -482,7 +482,7 @@ export default function App() {
         id:makeId(), title:r.title, category:'Execution', primaryColor:'#ffb900', secondaryColor:'#ff4bd8',
         expectedMinutes:45,
         definitionOfDone:r.definitionOfDone || r.title,
-        nextSteps:(r.nextAction || 'Define the first action').split(/\\n/).filter(Boolean).slice(0,3),
+        nextSteps:(r.nextAction || 'Define the first action').split(/\n/).filter(Boolean).slice(0,3),
         priority,status,source:'import',timing:r.timing
       })
     }
