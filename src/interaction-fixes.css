@@ -115,3 +115,35 @@
     animation: none;
   }
 }
+
+
+/* New X form: native select menus can inherit white-on-white text on
+   Windows/Chromium even when the closed control uses a dark theme.
+   Keep the control dark, but make the OS popup explicitly legible. */
+.x-form-modal select,
+.capture-type select {
+  color: #f7f3eb;
+  background-color: #242128;
+  -webkit-text-fill-color: #f7f3eb;
+}
+
+.x-form-modal select option,
+.x-form-modal select optgroup,
+.capture-type select option,
+.capture-type select optgroup {
+  background-color: #ffffff;
+  color: #1b1a20;
+  -webkit-text-fill-color: #1b1a20;
+}
+
+.x-form-modal input,
+.x-form-modal textarea {
+  color: #f7f3eb;
+  caret-color: #f6c453;
+}
+
+.x-form-modal input::placeholder,
+.x-form-modal textarea::placeholder {
+  color: #aaa4b1;
+  opacity: 1;
+}
