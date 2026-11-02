@@ -1,0 +1,117 @@
+/* XLock interaction + rendering fixes
+   Keeps behavioral bug fixes isolated from the visual system.
+*/
+
+/* ---------------------------------------------------------
+   STARRX LOGO
+   The old body clip-path clipped the StarrTree PNG itself.
+   The body shape now lives on ::before so the logo can render
+   fully above the silhouette.
+   --------------------------------------------------------- */
+.starrx-silhouette {
+  clip-path: none !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+  isolation: isolate;
+}
+
+.starrx-silhouette::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  clip-path: polygon(
+    37% 0,
+    63% 0,
+    72% 14%,
+    76% 27%,
+    92% 38%,
+    79% 45%,
+    73% 60%,
+    68% 76%,
+    78% 100%,
+    58% 100%,
+    50% 80%,
+    42% 100%,
+    22% 100%,
+    32% 76%,
+    27% 60%,
+    21% 45%,
+    8% 38%,
+    24% 27%,
+    28% 14%
+  );
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,.12), rgba(255,255,255,.03)),
+    radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--accent2) 34%, #08050d), #050308 65%);
+  filter:
+    drop-shadow(0 0 1px color-mix(in srgb, var(--accent) 48%, transparent))
+    drop-shadow(0 0 24px color-mix(in srgb, var(--accent) 15%, transparent));
+}
+
+.starrx-silhouette .tree-mark.official-mark {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 21%;
+  width: 122px !important;
+  height: 122px !important;
+  max-width: none;
+  object-fit: contain !important;
+  transform: translateX(-50%);
+  overflow: visible;
+  filter:
+    drop-shadow(0 0 7px rgba(255,208,68,.24))
+    drop-shadow(0 7px 15px rgba(0,0,0,.34));
+}
+
+/* Make the selected state read as dismissible without adding clutter. */
+.app.unlocked.has-inspected-x,
+.app.unlocked:has(.task-segment.selected) {
+  cursor: default;
+}
+
+.app.unlocked:has(.task-segment.selected) .unlocked-stage::after {
+  content: "Tap outside to inspect another X";
+  position: fixed;
+  left: 50%;
+  bottom: max(72px, calc(58px + env(safe-area-inset-bottom)));
+  z-index: 18;
+  transform: translateX(-50%);
+  padding: 7px 11px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 999px;
+  color: rgba(245,240,230,.34);
+  background: rgba(6,6,9,.52);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  font-size: .58rem;
+  letter-spacing: .08em;
+  pointer-events: none;
+  animation: xDismissHint .22s ease both;
+}
+
+@keyframes xDismissHint {
+  from { opacity: 0; transform: translate(-50%, 5px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@media (max-width: 680px) {
+  .starrx-silhouette .tree-mark.official-mark {
+    width: 108px !important;
+    height: 108px !important;
+  }
+
+  .app.unlocked:has(.task-segment.selected) .unlocked-stage::after {
+    bottom: calc(82px + env(safe-area-inset-bottom));
+    font-size: .54rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app.unlocked:has(.task-segment.selected) .unlocked-stage::after {
+    animation: none;
+  }
+}

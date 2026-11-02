@@ -1,7 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 import CosmicField from './components/CosmicField.jsx'
 import StarCursor from './components/StarCursor.jsx'
 import StarrVis from './components/StarrVis.jsx'
+import SpotlightPanel from './components/SpotlightPanel.jsx'
+import starrtreeLogo from './assets/starrtree-logo.png'
 import NewXModal from './components/NewXModal.jsx'
 import CompletionModal from './components/CompletionModal.jsx'
 import {
@@ -152,21 +155,13 @@ function normalizeAngle(delta) {
 
 function TreeXMark({ compact = false }) {
   return (
-    <svg className={compact ? 'tree-mark compact' : 'tree-mark'} viewBox="0 0 200 200" aria-hidden="true">
-      <defs>
-        <linearGradient id="goldMark" x1="0" x2="1">
-          <stop offset="0" stopColor="#f9dd83" />
-          <stop offset=".45" stopColor="#f2b632" />
-          <stop offset="1" stopColor="#fff1ad" />
-        </linearGradient>
-      </defs>
-      <path d="M35 42 L100 100 L165 42 M35 158 L100 100 L165 158" fill="none" stroke="url(#goldMark)" strokeWidth="9" strokeLinecap="round" />
-      <path d="M100 36 L100 164" stroke="url(#goldMark)" strokeWidth="6" strokeLinecap="round" />
-      <path d="M100 78 C77 62 63 57 50 56 M100 82 C122 65 137 59 151 57 M100 96 C77 88 64 88 50 91 M100 98 C122 90 136 89 151 92" fill="none" stroke="url(#goldMark)" strokeWidth="4" strokeLinecap="round" />
-      <path d="M100 120 C81 134 72 147 67 164 M100 120 C119 134 129 147 135 164 M100 124 C92 142 89 157 88 174 M100 124 C108 142 112 157 112 174" fill="none" stroke="url(#goldMark)" strokeWidth="4" strokeLinecap="round" />
-      <circle cx="100" cy="100" r="8" fill="#fff2b3" />
-      <path d="M100 18 L104 30 L117 34 L104 38 L100 51 L96 38 L83 34 L96 30 Z" fill="#fff2b3" />
-    </svg>
+    <img
+      className={compact ? 'tree-mark compact official-mark' : 'tree-mark official-mark'}
+      src={starrtreeLogo}
+      alt=""
+      aria-hidden="true"
+      draggable="false"
+    />
   )
 }
 
@@ -737,15 +732,23 @@ export default function App() {
       </header>
 
       <section className="unlocked-stage">
-        <div className="intro-copy">
-          <p className="eyebrow">ONE FOCUS. INFINITE POSSIBILITIES.</p>
-          <h1>Choose what gets your attention.</h1>
-          <p>Tap a sector to inspect it. Then turn the instrument to lock in.</p>
-        </div>
+        <motion.div
+          className="intro-copy"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: .55, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <p className="eyebrow">ONE FOCUS · INFINITE POSSIBILITY</p>
+          <h1><span>Choose one.</span><span>Finish it.</span></h1>
+          <p>Inspect the missions around the dial. When one deserves your attention, turn the instrument and lock in.</p>
+        </motion.div>
 
         {tasks.length > 0 ? (
-          <div
+          <motion.div
             className={`wheel-shell ${selected ? 'has-selection' : ''}`}
+            initial={{ opacity: 0, scale: .94, y: 18 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: .72, delay: .08, ease: [0.22, 1, 0.36, 1] }}
             ref={wheelRef}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
@@ -769,6 +772,28 @@ export default function App() {
                     <feMergeNode in="SourceGraphic" />
                   </feMerge>
                 </filter>
+                <filter id="selectedGlow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="7" result="soft" />
+                  <feColorMatrix in="soft" type="matrix"
+                    values="1 0 0 0 0.35  0 1 0 0 0.22  0 0 1 0 0.02  0 0 0 .72 0" result="goldSoft" />
+                  <feMerge>
+                    <feMergeNode in="goldSoft" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <radialGradient id="coreGradient" cx="38%" cy="30%" r="78%">
+                  <stop offset="0" stopColor="#2f2840" />
+                  <stop offset=".28" stopColor="#16121f" />
+                  <stop offset=".7" stopColor="#09080d" />
+                  <stop offset="1" stopColor="#030305" />
+                </radialGradient>
+                <linearGradient id="coreRim" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stopColor="#fff6c8" stopOpacity=".9" />
+                  <stop offset=".2" stopColor="#d9a94c" stopOpacity=".64" />
+                  <stop offset=".55" stopColor="#69501e" stopOpacity=".32" />
+                  <stop offset=".82" stopColor="#f6d77c" stopOpacity=".74" />
+                  <stop offset="1" stopColor="#fff8d6" stopOpacity=".4" />
+                </linearGradient>
               </defs>
               {tasks.map((task, index) => {
                 const start = index * slice - slice / 2
@@ -793,13 +818,17 @@ export default function App() {
                     <path
                       d={arcPath(350, 350, 175, 300, start, end)}
                       fill={`url(#segment-${index})`}
-                      stroke={selectedId === task.id ? '#fff0a5' : 'rgba(246,196,83,.5)'}
-                      strokeWidth={selectedId === task.id ? 4 : 2}
+                      stroke={selectedId === task.id ? '#fff4bc' : 'rgba(231,202,133,.34)'}
+                      strokeWidth={selectedId === task.id ? 3.2 : 1.4}
+                      filter={selectedId === task.id ? 'url(#selectedGlow)' : undefined}
                     />
                     <defs>
-                      <linearGradient id={`segment-${index}`} x1="0" x2="1">
-                        <stop offset="0" stopColor={task.primaryColor} stopOpacity=".62" />
-                        <stop offset="1" stopColor={task.secondaryColor} stopOpacity=".34" />
+                      <linearGradient id={`segment-${index}`} x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0" stopColor="#ffffff" stopOpacity=".18" />
+                        <stop offset=".12" stopColor={task.primaryColor} stopOpacity=".72" />
+                        <stop offset=".58" stopColor={task.secondaryColor} stopOpacity=".48" />
+                        <stop offset=".86" stopColor={task.primaryColor} stopOpacity=".28" />
+                        <stop offset="1" stopColor="#050407" stopOpacity=".9" />
                       </linearGradient>
                     </defs>
                     {(() => {
@@ -817,11 +846,15 @@ export default function App() {
                 )
               })}
 
-              <circle cx="350" cy="350" r="146" className="core-disc" />
+              <circle cx="350" cy="350" r="149" className="core-rim-disc" />
+              <circle cx="350" cy="350" r="142" className="core-disc" fill="url(#coreGradient)" />
+              <circle cx="350" cy="350" r="118" className="core-inner-disc" />
               <foreignObject x="245" y="245" width="210" height="210">
                 <div className="wheel-core">
-                  <TreeXMark />
-                  <span>{selected ? 'SELECTED' : 'UNI'}</span>
+                  <div className="core-sigil"><TreeXMark compact /></div>
+                  <strong>{selected ? 'X SELECTED' : 'UNI'}</strong>
+                  <span>{selected ? selected.title : 'EXECUTION CORE'}</span>
+                  <small>{selected ? 'Turn 28° to commit' : 'Choose deliberately'}</small>
                 </div>
               </foreignObject>
             </svg>
@@ -831,26 +864,38 @@ export default function App() {
               <small>UNI</small>
             </div>
 
-            <div className={`selection-card ${selected ? 'visible' : ''}`}>
+            <AnimatePresence mode="wait">
               {selected && (
-                <>
-                  <p className="eyebrow">{selected.category} · {selected.expectedMinutes} MIN</p>
-                  <h2>{selected.title}</h2>
-                  <p>{selected.definitionOfDone}</p>
-                  <div className="selection-next">
-                    {selected.nextSteps.slice(0, 3).map((step, index) => (
-                      <span key={step}><b>{index + 1}</b>{step}</span>
-                    ))}
-                  </div>
-                  <div className="commit-instruction">
-                    <RotateCcw size={18} />
-                    <span>Turn the wheel 28° to lock in</span>
-                    <strong>{Math.min(100, Math.round((Math.abs(drag.delta) / 28) * 100))}%</strong>
-                  </div>
-                </>
+                <motion.div
+                  key={selected.id}
+                  className="selection-card visible"
+                  initial={{ opacity: 0, y: 14, scale: .985 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: .985 }}
+                  transition={{ duration: .24, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <SpotlightPanel className="selection-material" spotlight="rgba(255, 224, 143, .16)">
+                    <div className="selection-meta">
+                      <span>{selected.category}</span>
+                      <span>{selected.expectedMinutes} MIN</span>
+                    </div>
+                    <h2>{selected.title}</h2>
+                    <p>{selected.definitionOfDone}</p>
+                    <div className="selection-next">
+                      {selected.nextSteps.slice(0, 3).map((step, index) => (
+                        <span key={step}><b>{String(index + 1).padStart(2, '0')}</b>{step}</span>
+                      ))}
+                    </div>
+                    <div className="commit-instruction">
+                      <div className="commit-icon"><RotateCcw size={17} /></div>
+                      <span>Turn the dial 28° to lock X</span>
+                      <strong>{Math.min(100, Math.round((Math.abs(drag.delta) / 28) * 100))}%</strong>
+                    </div>
+                  </SpotlightPanel>
+                </motion.div>
               )}
-            </div>
-          </div>
+            </AnimatePresence>
+          </motion.div>
         ) : (
           <div className="empty-complete">
             <TreeXMark />
@@ -867,12 +912,19 @@ export default function App() {
           </div>
         )}
 
-        <div className="starrvis-perch">
+        <motion.div
+          className="starrvis-perch"
+          initial={{ opacity: 0, x: 12 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: .45, delay: .3 }}
+        >
+          <div className="starrvis-console-label">STARRVIS</div>
           <StarrVis
+            compact
             mood={selected ? 'curious' : 'idle'}
-            message={selected ? 'That one? Turn the wheel.' : 'Pick one mission. I’ll keep the rest safe.'}
+            message={selected ? 'Commit when it feels right.' : 'One mission. I’ll hold the rest.'}
           />
-        </div>
+        </motion.div>
       </section>
 
       <footer className="footer-bar">

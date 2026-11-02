@@ -1,0 +1,558 @@
+/* XLock premium surface system
+   Visual techniques adapted from the resource library:
+   - React Bits GlareHover: traveling specular highlight
+   - React Bits BorderGlow: directional / mesh edge illumination
+   - React Bits ShinyText: restrained metallic text sheen
+   - Liquid Glass design language: refractive layered surfaces
+
+   These overrides intentionally load after styles.css.
+*/
+
+:root {
+  --xo-metal-0: #050506;
+  --xo-metal-1: #0c0b0f;
+  --xo-metal-2: #17151b;
+  --xo-rim: rgba(255, 245, 211, .18);
+  --xo-rim-hot: rgba(255, 226, 137, .72);
+  --xo-gold: #e7bd58;
+  --xo-gold-hot: #fff0aa;
+  --xo-purple: #8a63ff;
+  --xo-shadow: rgba(0, 0, 0, .72);
+  --xo-surface-shadow:
+    0 1px 0 rgba(255,255,255,.08) inset,
+    0 -1px 0 rgba(0,0,0,.65) inset,
+    0 8px 18px rgba(0,0,0,.34),
+    0 22px 52px rgba(0,0,0,.34);
+}
+
+/* ---------- Header dock ---------- */
+.top-actions {
+  position: relative;
+  padding: 5px;
+  border: 1px solid rgba(255,255,255,.065);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.01) 44%, rgba(0,0,0,.18)),
+    rgba(7,7,10,.54);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.08) inset,
+    0 -1px 0 rgba(0,0,0,.58) inset,
+    0 16px 42px rgba(0,0,0,.28);
+  -webkit-backdrop-filter: blur(24px) saturate(1.35);
+  backdrop-filter: blur(24px) saturate(1.35);
+  isolation: isolate;
+}
+
+.top-actions::before {
+  content: "";
+  position: absolute;
+  inset: 1px 9% auto;
+  height: 1px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.34), transparent);
+  opacity: .55;
+  pointer-events: none;
+}
+
+/* ---------- Machined / glass control family ---------- */
+.ghost-button,
+.sync-pill,
+.complete-button,
+.secondary-button,
+.primary-button,
+.timeout-token,
+.capture-fab {
+  --control-accent: 231 189 88;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.10);
+  color: rgba(250,247,239,.82);
+  background:
+    radial-gradient(circle at 32% 6%, rgba(255,255,255,.13), transparent 31%),
+    linear-gradient(180deg, rgba(255,255,255,.065) 0%, rgba(255,255,255,.018) 42%, rgba(0,0,0,.20) 100%),
+    linear-gradient(145deg, #17161b, #0a090d 58%, #050506);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.12) inset,
+    0 -6px 13px rgba(0,0,0,.28) inset,
+    0 1px 0 rgba(255,255,255,.035),
+    0 7px 0 rgba(0,0,0,.28),
+    0 12px 25px rgba(0,0,0,.31);
+  -webkit-backdrop-filter: blur(18px) saturate(1.25);
+  backdrop-filter: blur(18px) saturate(1.25);
+  transform: translateZ(0);
+  transition:
+    transform .22s cubic-bezier(.2,.8,.2,1),
+    border-color .22s ease,
+    box-shadow .22s ease,
+    background .22s ease,
+    color .22s ease;
+}
+
+/* React Bits GlareHover-inspired specular sweep */
+.ghost-button::before,
+.sync-pill::before,
+.complete-button::before,
+.secondary-button::before,
+.primary-button::before,
+.timeout-token::before,
+.capture-fab::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -100% -80%;
+  pointer-events: none;
+  background: linear-gradient(
+    112deg,
+    transparent 37%,
+    rgba(255,255,255,.03) 44%,
+    rgba(255,244,208,.30) 49%,
+    rgba(255,255,255,.07) 54%,
+    transparent 62%
+  );
+  transform: translate3d(-34%, -14%, 0) rotate(3deg);
+  transition: transform .7s cubic-bezier(.19,1,.22,1), opacity .5s ease;
+  opacity: .62;
+}
+
+/* Tiny polished rim, independent of glare */
+.ghost-button > svg,
+.complete-button > svg,
+.secondary-button > svg,
+.primary-button > svg,
+.timeout-token > svg,
+.capture-fab > svg,
+.sync-pill > svg {
+  position: relative;
+  z-index: 2;
+  filter:
+    drop-shadow(0 1px 0 rgba(255,255,255,.22))
+    drop-shadow(0 4px 6px rgba(0,0,0,.34));
+  transition: transform .22s cubic-bezier(.2,.8,.2,1), filter .22s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ghost-button:hover,
+  .complete-button:hover,
+  .secondary-button:hover,
+  .primary-button:hover,
+  .timeout-token:hover,
+  .capture-fab:hover {
+    transform: translateY(-2px) scale(1.012);
+    border-color: rgba(var(--control-accent), .35);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.16) inset,
+      0 -6px 13px rgba(0,0,0,.26) inset,
+      0 9px 0 rgba(0,0,0,.25),
+      0 16px 32px rgba(0,0,0,.38),
+      0 0 26px rgba(var(--control-accent), .08);
+  }
+
+  .ghost-button:hover::before,
+  .complete-button:hover::before,
+  .secondary-button:hover::before,
+  .primary-button:hover::before,
+  .timeout-token:hover::before,
+  .capture-fab:hover::after {
+    transform: translate3d(35%, 16%, 0) rotate(3deg);
+  }
+
+  .ghost-button:hover > svg,
+  .complete-button:hover > svg,
+  .secondary-button:hover > svg,
+  .primary-button:hover > svg,
+  .capture-fab:hover > svg {
+    transform: translateY(-1px) scale(1.04);
+    filter:
+      drop-shadow(0 1px 0 rgba(255,255,255,.32))
+      drop-shadow(0 5px 9px rgba(0,0,0,.45));
+  }
+}
+
+.ghost-button:active,
+.complete-button:active,
+.secondary-button:active,
+.primary-button:active,
+.timeout-token:active,
+.capture-fab:active {
+  transform: translateY(4px) scale(.975);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.08) inset,
+    0 -2px 6px rgba(0,0,0,.22) inset,
+    0 2px 0 rgba(0,0,0,.30),
+    0 7px 14px rgba(0,0,0,.30);
+  transition-duration: .08s;
+}
+
+.ghost-button:focus-visible,
+.complete-button:focus-visible,
+.secondary-button:focus-visible,
+.primary-button:focus-visible,
+.timeout-token:focus-visible,
+.capture-fab:focus-visible {
+  outline: none;
+  border-color: rgba(255,225,139,.72);
+  box-shadow:
+    0 0 0 2px rgba(5,5,7,.92),
+    0 0 0 4px rgba(231,189,88,.34),
+    var(--xo-surface-shadow);
+}
+
+/* Cloud status gets its own gemstone read rather than generic black. */
+.sync-pill.synced {
+  --control-accent: 82 222 157;
+  color: #94f0bc;
+  border-color: rgba(82,222,157,.19);
+  background:
+    radial-gradient(circle at 35% 12%, rgba(151,255,201,.16), transparent 31%),
+    linear-gradient(180deg, rgba(71,211,142,.09), rgba(13,38,28,.06) 48%, rgba(0,0,0,.20)),
+    linear-gradient(145deg, #102018, #080d0a 63%, #050706);
+  box-shadow:
+    0 1px 0 rgba(180,255,216,.11) inset,
+    0 -5px 13px rgba(0,0,0,.28) inset,
+    0 7px 0 rgba(0,0,0,.24),
+    0 12px 27px rgba(0,0,0,.31),
+    0 0 26px rgba(71,211,142,.06);
+}
+
+.sync-pill.synced > svg {
+  filter:
+    drop-shadow(0 0 6px rgba(76,235,159,.26))
+    drop-shadow(0 3px 5px rgba(0,0,0,.42));
+}
+
+/* ---------- Metallic sheen text, React Bits ShinyText-inspired ---------- */
+.brand span,
+.intro-copy .eyebrow,
+.selection-meta,
+.lock-status,
+.starrvis-console-label {
+  background-image: linear-gradient(
+    112deg,
+    currentColor 0%,
+    currentColor 34%,
+    #fff5cf 47%,
+    #ffffff 50%,
+    #ffe09a 53%,
+    currentColor 66%,
+    currentColor 100%
+  );
+  background-size: 220% auto;
+  background-position: 140% center;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: xoTextSheen 7.5s cubic-bezier(.4,0,.2,1) infinite;
+}
+
+@keyframes xoTextSheen {
+  0%, 64% { background-position: 140% center; }
+  82%, 100% { background-position: -55% center; }
+}
+
+/* ---------- Selected X: React Bits BorderGlow-style living edge ---------- */
+.selection-material {
+  --spot-x: 50%;
+  --spot-y: 50%;
+  overflow: hidden;
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(rgba(9,9,12,.93), rgba(7,7,10,.95)) padding-box,
+    linear-gradient(132deg,
+      rgba(255,245,214,.32),
+      rgba(231,189,88,.13) 24%,
+      rgba(139,98,255,.20) 52%,
+      rgba(255,217,113,.28) 80%,
+      rgba(255,255,255,.14)) border-box !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.08) inset,
+    0 -1px 0 rgba(0,0,0,.55) inset,
+    0 18px 45px rgba(0,0,0,.46),
+    0 0 0 1px rgba(255,220,132,.025),
+    0 0 38px rgba(134,94,255,.05) !important;
+}
+
+.selection-material::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: -1px !important;
+  z-index: 0 !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  opacity: .9 !important;
+  background:
+    radial-gradient(220px circle at var(--spot-x) var(--spot-y), rgba(255,231,160,.16), transparent 55%),
+    radial-gradient(330px circle at calc(var(--spot-x) + 12%) calc(var(--spot-y) - 8%), rgba(133,90,255,.08), transparent 67%) !important;
+}
+
+.selection-material::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+  background:
+    linear-gradient(112deg, transparent 18%, rgba(255,255,255,.06) 39%, rgba(255,235,179,.12) 48%, transparent 61%) !important;
+  background-size: 240% 240% !important;
+  background-position: -120% -120% !important;
+  transition: background-position .85s cubic-bezier(.19,1,.22,1) !important;
+  mix-blend-mode: screen;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .selection-material:hover::after {
+    background-position: 120% 120% !important;
+  }
+}
+
+/* ---------- Dial material: more like machined glass/metal, less flat SVG ---------- */
+.wheel-shell {
+  filter: drop-shadow(0 34px 50px rgba(0,0,0,.45));
+}
+
+.wheel-shell::before {
+  background:
+    radial-gradient(circle at 30% 17%, rgba(255,255,255,.075), transparent 18%),
+    radial-gradient(circle at 64% 76%, rgba(117,82,255,.10), transparent 34%),
+    conic-gradient(from 210deg,
+      rgba(255,224,139,.025),
+      transparent 14%,
+      rgba(255,255,255,.025) 24%,
+      transparent 48%,
+      rgba(116,79,255,.035) 68%,
+      transparent 84%,
+      rgba(255,224,139,.025)),
+    rgba(6,6,8,.60) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.08) inset,
+    0 -22px 70px rgba(0,0,0,.44) inset,
+    0 30px 88px rgba(0,0,0,.50),
+    0 0 0 1px rgba(255,238,190,.025) !important;
+}
+
+.task-segment path {
+  filter:
+    brightness(.72)
+    saturate(.78)
+    contrast(1.12)
+    drop-shadow(0 2px 1px rgba(255,255,255,.025))
+    drop-shadow(0 8px 11px rgba(0,0,0,.25)) !important;
+}
+
+.task-segment.selected path {
+  filter:
+    brightness(1.08)
+    saturate(.94)
+    contrast(1.08)
+    drop-shadow(0 2px 2px rgba(255,241,190,.14))
+    drop-shadow(0 10px 17px rgba(0,0,0,.34))
+    drop-shadow(0 0 18px rgba(231,189,88,.14)) !important;
+}
+
+/* ---------- UNI core: polished medallion with animated specular light ---------- */
+.core-sigil {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-color: rgba(255,229,154,.30) !important;
+  background:
+    radial-gradient(circle at 32% 19%, rgba(255,255,255,.18), transparent 25%),
+    radial-gradient(circle at 62% 72%, rgba(168,109,255,.10), transparent 43%),
+    linear-gradient(145deg, #242026 0%, #0b0a0d 45%, #18130a 100%) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.15) inset,
+    0 -10px 18px rgba(0,0,0,.35) inset,
+    0 9px 20px rgba(0,0,0,.40),
+    0 0 0 1px rgba(255,210,98,.055),
+    0 0 28px rgba(231,189,88,.08) !important;
+}
+
+.core-sigil::before {
+  content: "";
+  position: absolute;
+  inset: -60%;
+  z-index: -1;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0 19%,
+    rgba(255,241,185,.24) 25%,
+    rgba(255,255,255,.09) 29%,
+    transparent 35% 67%,
+    rgba(135,93,255,.15) 73%,
+    transparent 80%
+  );
+  animation: xoMetalSpin 9s linear infinite;
+}
+
+.core-sigil::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: inherit;
+  z-index: -1;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.035) inset,
+    0 0 20px rgba(255,210,105,.035) inset;
+}
+
+@keyframes xoMetalSpin { to { transform: rotate(360deg); } }
+
+.core-sigil .tree-mark.official-mark {
+  position: relative;
+  z-index: 2;
+  filter:
+    drop-shadow(0 1px 0 rgba(255,255,255,.28))
+    drop-shadow(0 0 7px rgba(255,197,45,.22))
+    drop-shadow(0 7px 8px rgba(0,0,0,.42)) !important;
+}
+
+/* ---------- Capture becomes a premium physical oracle button ---------- */
+.capture-fab {
+  --control-accent: 231 189 88;
+  border-color: rgba(255,222,126,.31) !important;
+  background:
+    radial-gradient(circle at 32% 18%, rgba(255,255,255,.19), transparent 24%),
+    radial-gradient(circle at 56% 58%, rgba(128,78,230,.30), transparent 48%),
+    linear-gradient(150deg, #21192d, #0a080f 58%, #050506) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.18) inset,
+    0 -8px 15px rgba(0,0,0,.36) inset,
+    0 6px 0 rgba(0,0,0,.32),
+    0 14px 28px rgba(0,0,0,.42),
+    0 0 0 5px rgba(231,189,88,.025),
+    0 0 32px rgba(131,84,255,.12) !important;
+}
+
+.capture-fab::before {
+  border-color: rgba(154,111,255,.32) !important;
+  box-shadow: 0 0 13px rgba(117,74,255,.08) inset;
+}
+
+/* ---------- StarrVis receives a subtle physical tray rather than floating sticker ---------- */
+.starrvis-perch {
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,.006)),
+    rgba(7,7,10,.20);
+  box-shadow: 0 1px 0 rgba(255,255,255,.025) inset;
+}
+
+.starrvis-perch .starrvis-star {
+  filter:
+    drop-shadow(0 2px 0 rgba(255,248,215,.20))
+    drop-shadow(0 8px 10px rgba(0,0,0,.45))
+    drop-shadow(0 0 18px rgba(246,196,83,.22));
+}
+
+/* ---------- Primary / completion controls ---------- */
+.primary-button,
+.complete-button {
+  --control-accent: 232 190 86;
+  color: #171006 !important;
+  border-color: rgba(255,239,185,.40) !important;
+  background:
+    radial-gradient(circle at 31% 8%, rgba(255,255,255,.48), transparent 24%),
+    linear-gradient(180deg, #ffe39a 0%, #e7bb54 44%, #a96d16 100%) !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,.30);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.62) inset,
+    0 -8px 12px rgba(102,55,6,.24) inset,
+    0 7px 0 #5e3a0e,
+    0 13px 26px rgba(0,0,0,.36),
+    0 0 24px rgba(231,189,88,.10) !important;
+}
+
+.primary-button > svg,
+.complete-button > svg {
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,.38)) !important;
+}
+
+/* ---------- Small quality passes ---------- */
+.selection-next b {
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.07) inset,
+    0 4px 9px rgba(0,0,0,.20);
+}
+
+.commit-icon {
+  background:
+    radial-gradient(circle at 34% 19%, rgba(255,255,255,.11), transparent 35%),
+    rgba(255,255,255,.018);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.06) inset,
+    0 5px 10px rgba(0,0,0,.24);
+}
+
+.footer-bar {
+  border-color: rgba(255,255,255,.065) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.025), rgba(0,0,0,.08)),
+    rgba(7,7,10,.70) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.04) inset,
+    0 14px 36px rgba(0,0,0,.27);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2) !important;
+  backdrop-filter: blur(24px) saturate(1.2) !important;
+}
+
+/* Mobile circles keep the same material depth instead of flattening. */
+@media (max-width: 680px) {
+  .top-actions {
+    padding: 4px;
+    gap: 5px;
+  }
+
+  .ghost-button,
+  .sync-pill {
+    border-radius: 50% !important;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.13) inset,
+      0 -5px 10px rgba(0,0,0,.30) inset,
+      0 5px 0 rgba(0,0,0,.28),
+      0 10px 20px rgba(0,0,0,.28) !important;
+  }
+
+  .ghost-button:active,
+  .sync-pill:active {
+    transform: translateY(3px) scale(.96);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.08) inset,
+      0 -2px 5px rgba(0,0,0,.24) inset,
+      0 2px 0 rgba(0,0,0,.27),
+      0 6px 11px rgba(0,0,0,.25) !important;
+  }
+
+  .selection-material {
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.07) inset,
+      0 17px 36px rgba(0,0,0,.46),
+      0 0 25px rgba(132,91,255,.045) !important;
+  }
+
+  .core-sigil::before {
+    animation-duration: 12s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand span,
+  .intro-copy .eyebrow,
+  .selection-meta,
+  .lock-status,
+  .starrvis-console-label,
+  .core-sigil::before {
+    animation: none !important;
+  }
+
+  .ghost-button::before,
+  .sync-pill::before,
+  .complete-button::before,
+  .secondary-button::before,
+  .primary-button::before,
+  .timeout-token::before,
+  .capture-fab::after,
+  .selection-material::after {
+    transition: none !important;
+  }
+}
