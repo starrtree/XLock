@@ -147,3 +147,79 @@
   color: #aaa4b1;
   opacity: 1;
 }
+
+
+/* XLOCK NEON DAYLIGHT — high-energy, luminous color without sacrificing readability.
+   Applied last so it is reversible and does not disturb the execution engine. */
+:root { color-scheme:light; --x-neon-cyan:#00edff; --x-neon-pink:#ff32db; --x-neon-lime:#bfff35; --x-neon-yellow:#ffec26; }
+body, #root { background:#b1f6ff !important; }
+.app.unlocked, .app.locked {
+  color:#130d34 !important;
+  background:linear-gradient(128deg,#64e5ff 0%,#b2a0ff 25%,#ff85f3 48%,#ffd673 75%,#a4ff9f 100%) !important;
+  background-attachment:fixed !important;
+}
+.app.unlocked::before, .app.locked::before {
+  content:""; position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 12% 24%,rgba(0,250,255,.54),transparent 44%),
+    radial-gradient(ellipse at 89% 22%,rgba(255,29,216,.47),transparent 43%),
+    radial-gradient(ellipse at 52% 91%,rgba(199,255,25,.47),transparent 48%);
+}
+.app .topbar, .app .unlocked-stage, .app .focus-stage, .app .footer-bar { position:relative;z-index:2; }
+.app .topbar, .top-actions, .selection-material, .footer-bar, .starrvis-console,
+.app .selection-card, .app .next-stack {
+  filter:drop-shadow(0 6px 18px rgba(124,39,184,.14));
+}
+.app.unlocked .intro-copy h1,.app.unlocked .intro-copy h2,
+.app.unlocked .intro-copy p,.app.unlocked .brand span,
+.app.unlocked .brand small,.app .intro-copy .eyebrow {
+  color:#1a0849 !important;text-shadow:0 2px 0 rgba(255,255,255,.48),0 0 16px rgba(255,255,255,.64) !important;
+}
+.app .top-actions,.app .footer-bar,.app .selection-material,.app .selection-card .selection-material {
+  background:linear-gradient(145deg,rgba(255,255,255,.87),rgba(212,251,255,.76) 58%,rgba(253,206,255,.86)) !important;
+  border:2px solid rgba(255,255,255,.9) !important;
+  box-shadow:0 8px 0 rgba(119,49,185,.13),0 20px 44px rgba(121,31,180,.21),0 0 30px rgba(0,255,244,.2) !important;
+}
+.app .top-actions .ghost-button,.app .top-actions .sync-pill,.app .footer-bar button {
+  color:#240b5d !important;background:rgba(255,255,255,.78) !important;border-color:rgba(74,15,178,.23) !important;
+}
+.app .task-segment path {filter:brightness(1.5) saturate(1.65) drop-shadow(0 0 14px rgba(255,255,255,.48)) !important;}
+.app .task-segment.selected path {filter:brightness(1.65) saturate(1.9) drop-shadow(0 0 23px #ff31d9) !important;}
+.app .segment-label {background:rgba(29,12,84,.78) !important;border-color:rgba(255,255,255,.55)!important;}
+.app .segment-label strong {color:#fff !important;text-shadow:0 1px 7px rgba(0,0,0,.65)!important;}
+.app .wheel-shell {filter:drop-shadow(0 9px 35px rgba(255,40,218,.42)) !important;}
+.app .core-rim-disc {stroke:#faff00 !important;filter:drop-shadow(0 0 12px #ff32db) !important;}
+.app .core-inner-disc {fill:#791dff !important;stroke:#00f5ff !important;}
+.app .selection-card h2,.app .selection-material p,.app .selection-meta,.app .selection-next,
+.app .selection-next b,.app .selection-next span {color:#200c53 !important;text-shadow:none !important;}
+.app .capture-fab,.app .complete-button,.app .primary-button {
+  color:#210745 !important;background:linear-gradient(120deg,#bfff35,#00f0ff 46%,#ff5ce9) !important;
+  border:2px solid rgba(255,255,255,.92)!important;
+  box-shadow:0 0 25px rgba(0,237,255,.55),0 8px 20px rgba(255,35,223,.3)!important;
+}
+.app .focus-core,.app .next-step,.app .secondary-button {
+  background:rgba(255,255,255,.84) !important;color:#26065b !important;
+  border-color:rgba(144,34,229,.25) !important;
+}
+.app .focus-core h1,.app .timer-readout,.app .definition p,.app .next-step p {color:#24084f !important;}
+.modal-scrim {background:rgba(45,4,92,.45) !important;}
+.x-form-modal,.capture-modal,.vault-panel {
+  color:#1f0e4c !important;
+  background:linear-gradient(145deg,#e3ffff,#fff0ff 58%,#f0ffb9) !important;
+  border:2px solid rgba(255,255,255,.95) !important;
+  box-shadow:0 25px 85px rgba(94,15,184,.35),0 0 45px rgba(0,242,255,.3) !important;
+}
+.x-form-modal h2,.x-form-modal .muted,.x-form-modal label>span,.x-form-modal .eyebrow,.x-form-modal label small {color:#281050 !important;}
+.x-form-modal input,.x-form-modal textarea,.x-form-modal select,
+.capture-modal textarea,.capture-type select,.x-manage-item input,.x-manage-item select {
+  background:#fff !important;color:#200c48 !important;-webkit-text-fill-color:#200c48 !important;
+  border:2px solid #af90f5 !important;
+}
+.x-form-modal select option,.capture-type select option {color:#210b4a !important;background:#fff !important;-webkit-text-fill-color:#210b4a !important;}
+.x-form-modal input::placeholder,.x-form-modal textarea::placeholder {color:#61577c !important;}
+.x-import-text {min-height:165px;resize:vertical}
+.import-count {font-weight:700;color:#59248d !important}
+.x-manage-list {max-height:48vh;overflow:auto;display:grid;gap:9px}
+.x-manage-item {display:grid;grid-template-columns:minmax(0,1fr) 155px auto;gap:8px;align-items:center}
+.x-manage-item input,.x-manage-item select {min-width:0}
+.x-manage-item .ghost-button {color:#52148a;background:#fff;border-radius:12px}
+@media(max-width:680px){.x-manage-item{grid-template-columns:minmax(0,1fr) 1fr}.x-manage-item input{grid-column:1/-1}}
