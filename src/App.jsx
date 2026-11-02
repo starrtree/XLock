@@ -251,11 +251,76 @@ function VaultPanel({ title, items, onClose, emptyText }) {
   )
 }
 
+
+function ImportXsModal({ onClose, onImport }) {
+  const [raw, setRaw] = useState('')
+  const [message, setMessage] = useState('')
+  const preview = useMemo(() => {
+    if (!raw.trim()) return []
+    try {
+      let rows
+      if (raw.trimStart().startsWith('[')) {
+        const parsed = JSON.parse(raw)
+        if (!Array.isArray(parsed)) throw new Error('Expected a JSON array.')
+        rows = parsed.map(x => [x.status ?? '', x.title ?? x['X / Commitment'] ?? '', x.definitionOfDone ?? x['Definition of Done / Outcome'] ?? '', '', x.timing ?? '', x.nextAction ?? x['Next Action'] ?? ''])
+      } else {
+        rows = raw.trim().split(/\\r?\\n/).map(line => line.split('\\t'))
+        if (rows[0]?.some(x => /X \\/ Commitment|Status/i.test(x))) rows.shift()
+      }
+      return rows.map((cells, index) => ({
+        status: cells[0] ?? '',
+        title: (cells[1] ?? '').trim(),
+        definitionOfDone: cells[2] ?? '',
+        timing: cells[4] ?? '',
+        nextAction: cells[5] ?? '',
+        sourceRow: index + 1,
+      })).filter(x => x.title && !/DONE|✅/.test(x.status)).slice(0, 300)
+    } catch (e) {
+      return []
+    }
+  }, [raw])
+  return (
+    <div className="modal-scrim" onMouseDown={e => e.target === e.currentTarget && onClose()}>
+      <div className="x-form-modal x-import-modal">
+        <button className="icon-button modal-close" onClick={onClose} aria-label="Close import"><X size={18}/></button>
+        <p className="eyebrow">BRING YOUR REAL XS</p>
+        <h2>Import from your tracker.</h2>
+        <p className="muted">In Google Sheets or StarrLign, copy task rows including Status, X / Commitment, Definition of Done, Money, Timing and Next Action, then paste here. JSON arrays also work. Existing matching titles are skipped. Nothing is deleted or sent to GitHub.</p>
+        <textarea aria-label="Paste task rows" className="x-import-text" value={raw} onChange={e => {setRaw(e.target.value);setMessage('')}} placeholder="Paste copied spreadsheet rows here…" rows={8}/>
+        <p className="import-count">{preview.length} active X{preview.length===1?'':'s'} ready to import · Done rows excluded</p>
+        {message && <p className="import-count">{message}</p>}
+        <button className="primary-button" disabled={!preview.length} onClick={() => {const n=onImport(preview);setMessage(n + ' new Xs imported. Matching titles were skipped.');if(n)onClose()}}>Import {preview.length} Xs</button>
+      </div>
+    </div>
+  )
+}
+
+function ManageXsModal({ tasks, onClose, onUpdate, onRemove }) {
+  const [query,setQuery]=useState('')
+  const visible = tasks.filter(t=>t.title.toLowerCase().includes(query.toLowerCase()))
+  return <div className="modal-scrim" onMouseDown={e=>e.target===e.currentTarget && onClose()}>
+    <div className="x-form-modal x-manage-modal">
+      <button className="icon-button modal-close" onClick={onClose} aria-label="Close manager"><X size={18}/></button>
+      <p className="eyebrow">ORGANIZE WITHOUT OVERLOAD</p><h2>Manage your Xs.</h2>
+      <input aria-label="Find an X" placeholder="Find an X…" value={query} onChange={e=>setQuery(e.target.value)}/>
+      <div className="x-manage-list">{visible.map(t=><div className="x-manage-item" key={t.id}>
+        <input aria-label={'Edit title for '+t.title} value={t.title} onChange={e=>onUpdate(t.id,{title:e.target.value})}/>
+        <select aria-label={'Set status for '+t.title} value={t.status} onChange={e=>onUpdate(t.id,{status:e.target.value})}>
+          <option value="ready">Ready / Next</option><option value="blocked">Blocked</option><option value="done">Done</option>
+        </select>
+        <button className="ghost-button" onClick={()=>{if(window.confirm('Remove this X from your local XLock list?'))onRemove(t.id)}}>Remove</button>
+      </div>)}</div>
+    </div>
+  </div>
+}
+
 export default function App() {
   const [state, setState] = useState(initialState)
   const [selectedId, setSelectedId] = useState(null)
   const [captureOpen, setCaptureOpen] = useState(false)
   const [newXOpen, setNewXOpen] = useState(false)
+  const [importOpen, setImportOpen] = useState(false)
+  const [manageOpen, setManageOpen] = useState(false)
   const [completionOpen, setCompletionOpen] = useState(false)
   const [panel, setPanel] = useState(null)
   const [now, setNow] = useState(Date.now())
@@ -402,6 +467,30 @@ export default function App() {
     })
     setNewXOpen(false)
   }
+
+
+  const importXs = (rows) => {
+    const known = new Set(state.tasks.map(t=>t.title.trim().toLowerCase()))
+    const newTasks = []
+    for(const r of rows){
+      const k=r.title.toLowerCase()
+      if(known.has(k)) continue
+      known.add(k)
+      const status = /BLOCKED|⛔/i.test(r.status) ? 'blocked' : 'ready'
+      const priority = /NOW|🔴/i.test(r.status) ? 95 : /SCHEDULED|TIME|🟠/i.test(r.status) ? 75 : /NEXT|🟡/i.test(r.status) ? 55 : 25
+      newTasks.push({
+        id:makeId(), title:r.title, category:'Execution', primaryColor:'#ffb900', secondaryColor:'#ff4bd8',
+        expectedMinutes:45,
+        definitionOfDone:r.definitionOfDone || r.title,
+        nextSteps:(r.nextAction || 'Define the first action').split(/\\n/).filter(Boolean).slice(0,3),
+        priority,status,source:'import',timing:r.timing
+      })
+    }
+    if(newTasks.length) setState(prev=>({...prev,tasks:[...prev.tasks,...newTasks]}))
+    return newTasks.length
+  }
+  const updateX = (id,change) => setState(prev=>({...prev,tasks:prev.tasks.map(t=>t.id===id?{...t,...change}:t)}))
+  const removeX = id => setState(prev=>({...prev,tasks:prev.tasks.filter(t=>t.id!==id)}))
 
   const toggleStep = (index) => {
     if (!state.activeSession) return
@@ -719,6 +808,8 @@ export default function App() {
                 ? 'Cloud'
                 : 'Local'}
           </span>
+          <button className="ghost-button" onClick={() => setImportOpen(true)}>Import Xs</button>
+          <button className="ghost-button" onClick={() => setManageOpen(true)}>Manage</button>
           <button className="ghost-button" onClick={() => setNewXOpen(true)}>
             <Plus size={16} /> New X
           </button>
@@ -944,6 +1035,8 @@ export default function App() {
         />
       )}
 
+      {importOpen && <ImportXsModal onClose={() => setImportOpen(false)} onImport={importXs}/>}
+      {manageOpen && <ManageXsModal tasks={state.tasks} onClose={() => setManageOpen(false)} onUpdate={updateX} onRemove={removeX}/>}
       {newXOpen && (
         <NewXModal
           onClose={() => setNewXOpen(false)}
