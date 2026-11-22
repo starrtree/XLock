@@ -44,7 +44,7 @@ export default function StarrLignFeed() {
   }, [refreshCount])
 
   const candidates = feed?.tasks || []
-  const nowCandidate = candidates.find((task) => task.isReady) || candidates[0]
+  const nowCandidate = candidates.find((task) => task.isReady) || null
   const horizon = candidates.filter((task) => task.sourceTaskId !== nowCandidate?.sourceTaskId).slice(0, 3)
 
   return (
@@ -70,7 +70,9 @@ export default function StarrLignFeed() {
           The secure StarrLign connection is not enabled yet. Your existing XLock focus tasks are unchanged.
         </p>
       ) : !nowCandidate ? (
-        <p className="starrlign-feed-muted">No active committed tasks found in StarrLign.</p>
+        <p className="starrlign-feed-muted">{candidates.length
+          ? 'The approaching tasks are waiting on dependencies. Review blockers in StarrLign before choosing a new X.'
+          : 'No active committed tasks found in StarrLign.'}</p>
       ) : (
         <div className="starrlign-feed-grid">
           <article className="starrlign-now-candidate">
