@@ -4,6 +4,7 @@ import CosmicField from './components/CosmicField.jsx'
 import StarCursor from './components/StarCursor.jsx'
 import StarrVis from './components/StarrVis.jsx'
 import SpotlightPanel from './components/SpotlightPanel.jsx'
+import StarrLignFeed from './components/StarrLignFeed.jsx'
 import starrtreeLogo from './assets/starrtree-logo.png'
 import NewXModal from './components/NewXModal.jsx'
 import CompletionModal from './components/CompletionModal.jsx'
@@ -822,6 +823,7 @@ export default function App() {
         </div>
       </header>
 
+      <StarrLignFeed />
       <section className="unlocked-stage">
         <motion.div
           className="intro-copy"
