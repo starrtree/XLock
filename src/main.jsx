@@ -6,6 +6,7 @@ import './premium-surfaces.css'
 import './liquid-metal.css'
 import './instrument-v2.css'
 import './interaction-fixes.css'
+import './starrlign-feed.css'
 
 class XLockErrorBoundary extends React.Component {
   constructor(props) {

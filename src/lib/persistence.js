@@ -189,3 +189,17 @@ export async function persistState(state) {
     }
   }
 }
+
+
+/**
+ * Supplies the current verified session credential to XLock's own backend
+ * proxy. Never contains the StarrLign service-to-service secret.
+ */
+export async function getBridgeAccessToken() {
+  const client = getSupabase();
+  if (!client) return null;
+  await ensureUser();
+  const { data, error } = await client.auth.getSession();
+  if (error) throw error;
+  return data.session?.access_token ?? null;
+}
